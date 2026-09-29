@@ -6,17 +6,19 @@
 
 ## Поточний стан
 
-Початковий проєкт на Java 21: програма у `src/main/java/Main.java` виводить
-`Hello, world!` 67 разів. Початковий код і `pom.xml` збережено без змін.
-Основна гілка — `main`.
+Проєкт на Java 21: початкова програма у `LAB_01/src/main/java/Main.java`
+виводить `Hello, world!` 67 разів. Кореневий `pom.xml` є Maven-агрегатором
+із модулем `LAB_01`. Інфраструктурні зміни виконуються в гілці
+`lab01-infrastructure`; основна гілка — `main`.
 
 Для лабораторної роботи № 1 обрано **варіант 18 — «Метеостанція»**.
 Детальний [план виконання](PLAN.md) охоплює всі три рівні складності та
 додаткове завдання з кешуванням залежностей і номером CI-збірки.
 Роботу розбито на [GitHub Issues](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues).
 Додано [шість ролей ШІ та профілі Copilot](ai/README.md), форми Issues
-і шаблон Pull Request. Реалізація метеостанції, Maven Wrapper та CI/CD —
-наступні етапи плану.
+і шаблон Pull Request. Налаштовано структуру `LAB_01` та офіційний
+Maven Wrapper. Предметна реалізація, JUnit, SpotBugs, виконуваний JAR
+і CI/CD — наступні етапи плану.
 
 ## Запуск початкової програми
 
@@ -24,14 +26,94 @@
 
 ```text
 java -version
-java src/main/java/Main.java
+java LAB_01/src/main/java/Main.java
 ```
 
 Очікуваний результат — 67 рядків `Hello, world!`.
 Java запускає вихідний файл без окремої команди компіляції.
 
-У проєкті вже є початковий `pom.xml`. Повну збірку через Maven Wrapper,
-тести, SpotBugs і виконуваний JAR налаштуємо під час виконання плану.
+## Збірка через Maven Wrapper
+
+Потрібен JDK 21. Wrapper 3.3.4 використовує зафіксований Maven 3.9.9;
+глобальна установка Maven не потрібна. Під час першого запуску потрібен
+доступ до Maven Central для завантаження Maven і залежностей.
+
+Linux / macOS, із кореня репозиторію:
+
+```sh
+./mvnw -B clean verify
+```
+
+Windows PowerShell:
+
+Змінна середовища `JAVA_HOME` має вказувати на каталог установленого JDK 21,
+який містить `bin/java.exe`. Скрипт `mvnw.cmd` перевіряє її перед запуском.
+
+```powershell
+.\mvnw.cmd -B clean verify
+```
+
+Перевірити версію Maven: `./mvnw -version` або `.\mvnw.cmd -version`.
+Офіційні скрипти, конфігурацію та `.mvn/wrapper/maven-wrapper.jar` додано
+до репозиторію. Право виконання `mvnw` збережено в Git.
+
+Після збірки запуск початкової програми зі створеного JAR:
+
+```text
+java -cp LAB_01/target/lab01.jar Main
+```
+
+JUnit, SpotBugs і запуск через `java -jar` ще налаштовуються окремим
+[Issue #3](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/3).
+На поточному етапі предметних тестів немає.
+
+### Оновлення Maven Wrapper
+
+Wrapper згенеровано офіційним плагіном Apache Maven:
+
+```text
+mvn -N org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dtype=bin -Dmaven=3.9.9
+```
+
+Команда потрібна для генерації або оновлення Wrapper; для щоденної збірки
+використовуй `mvnw`. Тип `bin` включає JAR, як описано в
+[документації Apache Maven](https://maven.apache.org/tools/wrapper/).
+
+Перегенеруй Wrapper, коли потрібно змінити зафіксовану версію Maven
+або оновити сам Wrapper. Для наявного проєкту глобальний Maven не потрібен:
+запусти плагін через `./mvnw`, замінивши `3.9.9` у параметрі `-Dmaven`
+на потрібну версію Maven. Для оновлення самого Wrapper також зміни версію
+плагіна `3.3.4` на обрану версію.
+
+```sh
+./mvnw -N org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dtype=bin -Dmaven=3.9.9
+```
+
+У Windows використовуй `.\mvnw.cmd` із тими самими параметрами.
+Перевір згенеровані зміни та виконай `clean verify`, після чого додай
+до коміту всі змінені файли Wrapper: `mvnw`, `mvnw.cmd`,
+`.mvn/wrapper/maven-wrapper.jar` і `.mvn/wrapper/maven-wrapper.properties`.
+
+### Помилка `Permission denied`
+
+Якщо після клонування на Linux або macOS команда `./mvnw` завершується
+з `Permission denied`, віднови право виконання скрипта з кореня репозиторію:
+
+```sh
+chmod +x mvnw
+./mvnw -B clean verify
+```
+
+У репозиторії `mvnw` має режим Git `100755`, але деякі інструменти
+клонування або копіювання файлів можуть втратити право виконання.
+
+## Структура проєкту
+
+- `pom.xml` — агрегатор; `LAB_01/pom.xml` — модуль лабораторної.
+- `LAB_01/src/main/java/` — код, `LAB_01/src/test/java/` — майбутні тести.
+- `LAB_01/src/main/resources/` — ресурси; `LAB_01/data/` — майбутні вхідні дані.
+- `.mvn/wrapper/`, `mvnw`, `mvnw.cmd` — Maven Wrapper.
+- `.github/` і `ai/` — профілі агентів, інструкції та шаблони GitHub.
 
 ## Завдання лабораторної роботи № 1
 
