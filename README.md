@@ -46,6 +46,9 @@ Linux / macOS, із кореня репозиторію:
 
 Windows PowerShell:
 
+Змінна середовища `JAVA_HOME` має вказувати на каталог установленого JDK 21,
+який містить `bin/java.exe`. Скрипт `mvnw.cmd` перевіряє її перед запуском.
+
 ```powershell
 .\mvnw.cmd -B clean verify
 ```
