@@ -152,6 +152,12 @@ java -jar lab01.jar
 (`lab01-Linux-2`, `lab01-Windows-2`, `lab01-macOS-2`) завантажено
 й додатково запущено локально на Linux/Java 21: кожен дав 67 рядків.
 
+У [першому CI для версії](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/36602063273)
+на трьох ОС пройшли два тести й SpotBugs, а `--version` вивів
+`lab01 1.0.0 (build 7)`. Артефакти `lab01-Linux-7`,
+`lab01-Windows-7` і `lab01-macOS-7` завантажено й перевірено локальним
+запуском. Після зміни POM перший запуск створив новий Maven-кеш.
+
 Це початкова частина
 [Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
 Перевірки `--help` і CSV додамо після реалізації
