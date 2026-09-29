@@ -1,0 +1,37 @@
+name: Дефект
+description: Описати фактично знайдену помилку лабораторної
+title: "[bug] "
+labels: [bug]
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: Середовище
+      description: ОС, версія Java та коміт або версія програми.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Кроки відтворення
+      description: Вхідні дані, команда запуску та послідовність дій.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Очікуваний результат
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Фактичний результат
+      description: Текст помилки або результат запуску.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Докази
+      description: Лог, тест, файл результату або посилання на Actions.

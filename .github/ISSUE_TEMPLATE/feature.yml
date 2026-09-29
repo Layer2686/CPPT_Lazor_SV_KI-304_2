@@ -1,0 +1,53 @@
+name: Завдання лабораторної
+description: Запланувати інфраструктуру, функціональність або документацію
+title: "[task] "
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Напрям
+      options:
+        - Інфраструктура (infra)
+        - Функціональність (feature)
+        - Документація (docs)
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Рівень складності
+      options:
+        - Рівень 1
+        - Рівень 2
+        - Рівень 3
+        - Додаткове завдання
+        - Організаційне завдання
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Що потрібно зробити
+      description: Вкажіть вимогу методички та очікуваний результат.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерії готовності
+      description: Перелік перевірюваних результатів у вигляді чекліста.
+      placeholder: "- [ ] Результат можна перевірити конкретною командою або прикладом."
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Як перевірити
+      description: Команди, вхідні дані та очікуваний результат.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Залежності
+      description: Посилання на Issues, які потрібно виконати перед цим завданням.
