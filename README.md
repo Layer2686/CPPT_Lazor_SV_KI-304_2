@@ -157,6 +157,11 @@ java -jar lab01.jar
 `lab01 1.0.0 (build 7)`. Артефакти `lab01-Linux-7`,
 `lab01-Windows-7` і `lab01-macOS-7` завантажено й перевірено локальним
 запуском. Після зміни POM перший запуск створив новий Maven-кеш.
+У [повторному CI для версії](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/36602734924)
+логи `setup-java` підтвердили попадання в Maven-кеш і кеш Wrapper на
+всіх трьох ОС. Усі три збірки знову успішні, `--version` показав
+`lab01 1.0.0 (build 9)`, а артефакти названо `lab01-Linux-9`,
+`lab01-Windows-9` та `lab01-macOS-9`.
 
 Це початкова частина
 [Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
