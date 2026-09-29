@@ -121,6 +121,14 @@ java -jar lab01.jar
 Після злиття workflow в `main` можна також запустити його вручну
 через **Actions → CI → Run workflow** (`workflow_dispatch`).
 
+На коміті `5b4e288` успішно пройшли
+[CI для push](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/36595709477)
+та [CI для PR](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/36595877306).
+На кожній ОС: один тест без помилок/пропусків, SpotBugs без дефектів,
+67 очікуваних рядків зі зібраного JAR. Три артефакти запуску PR
+(`lab01-Linux-2`, `lab01-Windows-2`, `lab01-macOS-2`) завантажено
+й додатково запущено локально на Linux/Java 21: кожен дав 67 рядків.
+
 Це початкова частина
 [Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
 Перевірки `--help`, `--version` і CSV додамо після реалізації
