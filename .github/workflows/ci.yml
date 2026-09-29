@@ -42,12 +42,12 @@ jobs:
       - name: Verify with Maven Wrapper (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: ./mvnw -B clean verify
+        run: ./mvnw -B -Dbuild.number=${{ github.run_number }} clean verify
 
       - name: Verify with Maven Wrapper (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: .\mvnw.cmd -B clean verify
+        run: .\mvnw.cmd -B "-Dbuild.number=${{ github.run_number }}" clean verify
 
       - name: Run and check executable JAR
         shell: pwsh
@@ -70,6 +70,20 @@ jobs:
             }
           }
           Write-Output 'JAR check passed: 67 expected lines.'
+
+      - name: Check version and CI build number
+        shell: pwsh
+        run: |
+          $jarPath = 'LAB_01/target/lab01.jar'
+          $expected = 'lab01 1.0.0 (build ${{ github.run_number }})'
+          $actual = @(& java -jar $jarPath --version)
+          if ($LASTEXITCODE -ne 0) {
+            throw "Version command exited with code $LASTEXITCODE"
+          }
+          if ($actual.Count -ne 1 -or $actual[0] -cne $expected) {
+            throw "Expected '$expected', got '$($actual -join ', ')'"
+          }
+          Write-Output "Version check passed: $expected"
 
       - name: Upload executable JAR
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

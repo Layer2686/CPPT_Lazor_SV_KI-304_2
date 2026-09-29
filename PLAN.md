@@ -146,10 +146,10 @@ CPPT_Lazor_SV_KI-304_2/
 # Windows PowerShell
 .\mvnw.cmd -B clean verify
 
-# Запуск із кореня; назву JAR зафіксуємо в pom.xml
-java -jar LAB_01/target/lab01-1.0.0.jar --help
-java -jar LAB_01/target/lab01-1.0.0.jar --version
-java -jar LAB_01/target/lab01-1.0.0.jar --input LAB_01/data/input.csv --output out/report.txt
+# Запуск із кореня; назва JAR задана в LAB_01/pom.xml
+java -jar LAB_01/target/lab01.jar --help
+java -jar LAB_01/target/lab01.jar --version
+java -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv --output out/report.txt
 ```
 
 У методичці є неточність про порядок фаз Maven. Фактичний порядок —

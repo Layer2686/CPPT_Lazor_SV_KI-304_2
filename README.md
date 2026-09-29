@@ -8,8 +8,8 @@
 
 Проєкт на Java 21: початкова програма у `LAB_01/src/main/java/Main.java`
 виводить `Hello, world!` 67 разів. Кореневий `pom.xml` є Maven-агрегатором
-із модулем `LAB_01`. Інфраструктурні зміни виконуються в гілці
-`lab01-ci`; основна гілка — `main`.
+із модулем `LAB_01`. Основна гілка — `main`; зміни готуються в окремих
+робочих гілках.
 
 Для лабораторної роботи № 1 обрано **варіант 18 — «Метеостанція»**.
 Детальний [план виконання](PLAN.md) охоплює всі три рівні складності та
@@ -17,7 +17,7 @@
 Роботу розбито на [GitHub Issues](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues).
 Додано [шість ролей ШІ та профілі Copilot](ai/README.md), форми Issues
 і шаблон Pull Request. Налаштовано структуру `LAB_01` та офіційний
-Maven Wrapper, JUnit 5, Surefire, SpotBugs і Shade. У цій гілці додано
+Maven Wrapper, JUnit 5, Surefire, SpotBugs і Shade. Налаштовано
 GitHub Actions для трьох ОС і публікації JAR. Предметна реалізація
 та її перевірки в CI — наступні етапи плану.
 
@@ -69,11 +69,32 @@ Shade створює виконуваний `LAB_01/target/lab01.jar` із `Main
 runtime-залежностей у програми немає. JUnit має `scope=test` і не входить
 до JAR. Для запуску готового JAR потрібна Java 21.
 
+### Версія програми й номер збірки
+
+```sh
+java -jar LAB_01/target/lab01.jar --version
+```
+
+Локальна збірка виводить `lab01 1.0.0 (build local)`. Версія **1.0.0**
+належить вихідному коду й задана в кореневому `pom.xml`; модуль `LAB_01`
+її успадковує. Майбутній Git-тег `v1.0.0` позначатиме завершений реліз
+і має відповідати цій версії. Номер **build** вказує на окремий запуск CI:
+він змінюється між запусками того самого коду й не є новою версією програми.
+Для локальної збірки без CI використовується слово `local`.
+
+Під час збірки Maven підставляє обидва значення у
+`LAB_01/src/main/filtered-resources/build-info.properties` і пакує
+готовий ресурс у JAR. У GitHub Actions `build.number` отримує
+`github.run_number`, тому `--version` артефакту показує той самий номер,
+що є в назві `lab01-<ОС>-<номер запуску>`. Вихідний файл `Main.java`
+можна й далі запускати напряму без параметрів для початкових привітань;
+для `--version` спочатку зберіть JAR через Wrapper.
+
 ### Тести, пакування та аналіз
 
 Налаштування відповідають
 [Issue #3](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/3).
-`MainTest` перевіряє поточну поведінку: рівно 67 рядків `Hello, world!`.
+`MainTest` перевіряє 67 рядків `Hello, world!` та вивід `--version`.
 JUnit 5 задає перевірку, Surefire запускає тест, а SpotBugs аналізує
 скомпільовані класи та завершує збірку помилкою за наявності дефектів.
 
@@ -99,12 +120,14 @@ SpotBugs прив'язано до `verify`, тому команда `package` с
 [Workflow CI](.github/workflows/ci.yml) запускається на `push` і
 `pull_request`. Матриця містить Ubuntu, Windows і macOS з Temurin 21;
 помилка однієї ОС не скасовує інші завдання (`fail-fast: false`).
-На Unix запускається `./mvnw -B clean verify`, у Windows —
-`.\mvnw.cmd -B clean verify`. Maven-залежності й Wrapper кешуються
+На Unix запускається `./mvnw -B -Dbuild.number=<N> clean verify`,
+у Windows — `.\mvnw.cmd -B "-Dbuild.number=<N>" clean verify`,
+де `<N>` — `github.run_number`. Maven-залежності й Wrapper кешуються
 через `setup-java`; ключ залежить від ОС, POM та конфігурації Wrapper.
 
 Після успішної збірки кожна ОС запускає `java -jar` і перевіряє
-67 рядків `Hello, world!`, потім завантажує саме `LAB_01/target/lab01.jar`.
+67 рядків `Hello, world!`, далі перевіряє `--version` із номером
+поточного запуску й завантажує саме `LAB_01/target/lab01.jar`.
 Відсутній JAR або неправильний результат роблять завдання невдалим.
 Назва артефакту: `lab01-<ОС>-<номер запуску>`, наприклад `lab01-Windows-1`.
 GitHub Actions зафіксовано за повними SHA перевірених офіційних релізів.
@@ -131,7 +154,7 @@ java -jar lab01.jar
 
 Це початкова частина
 [Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
-Перевірки `--help`, `--version` і CSV додамо після реалізації
+Перевірки `--help` і CSV додамо після реалізації
 програми та предметних тестів. Issue #4 залишається відкритим до цього етапу.
 
 ### Оновлення Maven Wrapper
@@ -178,7 +201,8 @@ chmod +x mvnw
 
 - `pom.xml` — агрегатор; `LAB_01/pom.xml` — модуль лабораторної.
 - `LAB_01/src/main/java/` — код, `LAB_01/src/test/java/` — JUnit-тести.
-- `LAB_01/src/main/resources/` — ресурси; `LAB_01/data/` — майбутні вхідні дані.
+- `LAB_01/src/main/filtered-resources/` — ресурс із версією та номером збірки.
+- `LAB_01/src/main/resources/` — інші ресурси; `LAB_01/data/` — майбутні вхідні дані.
 - `.mvn/wrapper/`, `mvnw`, `mvnw.cmd` — Maven Wrapper.
 - `.github/` і `ai/` — профілі агентів, інструкції та шаблони GitHub.
 
@@ -204,7 +228,8 @@ date;temperature;humidity;pressure;wind
 
 Некоректні рядки супроводжуватимуться повідомленням із номером і причиною
 пропуску. Результат потрібно вивести в консоль і записати у файл.
-Майбутні параметри запуску: `--help`, `--input`, `--output`, `--version`.
+Зараз реалізовано `--version`; предметний CLI додасть `--help`, `--input`
+і `--output`.
 
 ## Матеріали та організація роботи
 
