@@ -9,7 +9,7 @@
 Проєкт на Java 21: початкова програма у `LAB_01/src/main/java/Main.java`
 виводить `Hello, world!` 67 разів. Кореневий `pom.xml` є Maven-агрегатором
 із модулем `LAB_01`. Інфраструктурні зміни виконуються в гілці
-`lab01-build-quality`; основна гілка — `main`.
+`lab01-ci`; основна гілка — `main`.
 
 Для лабораторної роботи № 1 обрано **варіант 18 — «Метеостанція»**.
 Детальний [план виконання](PLAN.md) охоплює всі три рівні складності та
@@ -17,8 +17,9 @@
 Роботу розбито на [GitHub Issues](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues).
 Додано [шість ролей ШІ та профілі Copilot](ai/README.md), форми Issues
 і шаблон Pull Request. Налаштовано структуру `LAB_01` та офіційний
-Maven Wrapper. У цій гілці підключено JUnit 5, Surefire,
-SpotBugs і Shade. Предметна реалізація та CI/CD — наступні етапи плану.
+Maven Wrapper, JUnit 5, Surefire, SpotBugs і Shade. У цій гілці додано
+GitHub Actions для трьох ОС і публікації JAR. Предметна реалізація
+та її перевірки в CI — наступні етапи плану.
 
 ## Запуск початкової програми
 
@@ -93,9 +94,37 @@ SpotBugs прив'язано до `verify`, тому команда `package` с
 
 Предметні тести метеостанції додаватимемо після реалізації у
 [Issue #10](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/10).
-CI/CD ще не налаштовано: автоматична збірка на Linux, Windows і macOS
-та публікація JAR належать
+### GitHub Actions та артефакти
+
+[Workflow CI](.github/workflows/ci.yml) запускається на `push` і
+`pull_request`. Матриця містить Ubuntu, Windows і macOS з Temurin 21;
+помилка однієї ОС не скасовує інші завдання (`fail-fast: false`).
+На Unix запускається `./mvnw -B clean verify`, у Windows —
+`.\mvnw.cmd -B clean verify`. Maven-залежності й Wrapper кешуються
+через `setup-java`; ключ залежить від ОС, POM та конфігурації Wrapper.
+
+Після успішної збірки кожна ОС запускає `java -jar` і перевіряє
+67 рядків `Hello, world!`, потім завантажує саме `LAB_01/target/lab01.jar`.
+Відсутній JAR або неправильний результат роблять завдання невдалим.
+Назва артефакту: `lab01-<ОС>-<номер запуску>`, наприклад `lab01-Windows-1`.
+GitHub Actions зафіксовано за повними SHA перевірених офіційних релізів.
+
+Відкрий [Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions),
+вибери потрібний запуск **CI** та перевір результати трьох завдань.
+У секції **Artifacts** завантаж архів потрібної ОС, розпакуй його
+й виконай у каталозі з отриманим файлом:
+
+```sh
+java -jar lab01.jar
+```
+
+Після злиття workflow в `main` можна також запустити його вручну
+через **Actions → CI → Run workflow** (`workflow_dispatch`).
+
+Це початкова частина
 [Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
+Перевірки `--help`, `--version` і CSV додамо після реалізації
+програми та предметних тестів. Issue #4 залишається відкритим до цього етапу.
 
 ### Оновлення Maven Wrapper
 
