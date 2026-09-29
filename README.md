@@ -9,7 +9,7 @@
 Проєкт на Java 21: початкова програма у `LAB_01/src/main/java/Main.java`
 виводить `Hello, world!` 67 разів. Кореневий `pom.xml` є Maven-агрегатором
 із модулем `LAB_01`. Інфраструктурні зміни виконуються в гілці
-`lab01-infrastructure`; основна гілка — `main`.
+`lab01-build-quality`; основна гілка — `main`.
 
 Для лабораторної роботи № 1 обрано **варіант 18 — «Метеостанція»**.
 Детальний [план виконання](PLAN.md) охоплює всі три рівні складності та
@@ -17,8 +17,8 @@
 Роботу розбито на [GitHub Issues](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues).
 Додано [шість ролей ШІ та профілі Copilot](ai/README.md), форми Issues
 і шаблон Pull Request. Налаштовано структуру `LAB_01` та офіційний
-Maven Wrapper. Предметна реалізація, JUnit, SpotBugs, виконуваний JAR
-і CI/CD — наступні етапи плану.
+Maven Wrapper. У цій гілці підключено JUnit 5, Surefire,
+SpotBugs і Shade. Предметна реалізація та CI/CD — наступні етапи плану.
 
 ## Запуск початкової програми
 
@@ -60,12 +60,42 @@ Windows PowerShell:
 Після збірки запуск початкової програми зі створеного JAR:
 
 ```text
-java -cp LAB_01/target/lab01.jar Main
+java -jar LAB_01/target/lab01.jar
 ```
 
-JUnit, SpotBugs і запуск через `java -jar` ще налаштовуються окремим
+Shade створює виконуваний `LAB_01/target/lab01.jar` із `Main-Class: Main`.
+Він включає бібліотеки, потрібні програмі під час запуску; наразі зовнішніх
+runtime-залежностей у програми немає. JUnit має `scope=test` і не входить
+до JAR. Для запуску готового JAR потрібна Java 21.
+
+### Тести, пакування та аналіз
+
+Налаштування відповідають
 [Issue #3](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/3).
-На поточному етапі предметних тестів немає.
+`MainTest` перевіряє поточну поведінку: рівно 67 рядків `Hello, world!`.
+JUnit 5 задає перевірку, Surefire запускає тест, а SpotBugs аналізує
+скомпільовані класи та завершує збірку помилкою за наявності дефектів.
+
+| Команда Linux / macOS | Що виконує |
+| --- | --- |
+| `./mvnw -B test` | Компіляція та запуск JUnit-тестів через Surefire |
+| `./mvnw -B package` | Попередні фази та пакування виконуваного JAR через Shade |
+| `./mvnw -B clean verify` | Очищення, компіляція, тести, пакування та `spotbugs:check` |
+
+У Windows заміни `./mvnw` на `.\mvnw.cmd` із тими самими параметрами.
+SpotBugs прив'язано до `verify`, тому команда `package` сама по собі
+його не запускає. Surefire має `failIfNoTests=true`: відсутність тестів
+також є помилкою збірки.
+
+Звіти тестів: `LAB_01/target/surefire-reports/`; результат аналізатора:
+`LAB_01/target/spotbugsXml.xml`. Версії залежностей і плагінів явно
+зафіксовано в `LAB_01/pom.xml`.
+
+Предметні тести метеостанції додаватимемо після реалізації у
+[Issue #10](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/10).
+CI/CD ще не налаштовано: автоматична збірка на Linux, Windows і macOS
+та публікація JAR належать
+[Issue #4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4).
 
 ### Оновлення Maven Wrapper
 
@@ -110,7 +140,7 @@ chmod +x mvnw
 ## Структура проєкту
 
 - `pom.xml` — агрегатор; `LAB_01/pom.xml` — модуль лабораторної.
-- `LAB_01/src/main/java/` — код, `LAB_01/src/test/java/` — майбутні тести.
+- `LAB_01/src/main/java/` — код, `LAB_01/src/test/java/` — JUnit-тести.
 - `LAB_01/src/main/resources/` — ресурси; `LAB_01/data/` — майбутні вхідні дані.
 - `.mvn/wrapper/`, `mvnw`, `mvnw.cmd` — Maven Wrapper.
 - `.github/` і `ai/` — профілі агентів, інструкції та шаблони GitHub.
