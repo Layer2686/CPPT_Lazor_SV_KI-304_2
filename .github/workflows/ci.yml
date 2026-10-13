@@ -57,19 +57,22 @@ jobs:
             throw "Executable JAR is missing: $jarPath"
           }
 
-          $output = @(& java -jar $jarPath)
+          $output = @(& java -jar $jarPath --input LAB_01/data/input.csv)
           if ($LASTEXITCODE -ne 0) {
             throw "JAR exited with code $LASTEXITCODE"
           }
-          if ($output.Count -ne 67) {
-            throw "Expected 67 output lines, got $($output.Count)"
-          }
-          foreach ($line in $output) {
-            if ($line -cne 'Hello, world!') {
-              throw "Unexpected output line: $line"
+          $expectedLines = @(
+            'Мінімальна температура: -5.50 °C'
+            'Максимальна швидкість вітру: 7.50 м/с'
+            'Середній рівень вологості: 70.00 %'
+            'Кількість коректних записів: 3'
+          )
+          foreach ($line in $expectedLines) {
+            if ($output -cnotcontains $line) {
+              throw "Expected JAR output line is missing: $line"
             }
           }
-          Write-Output 'JAR check passed: 67 expected lines.'
+          Write-Output 'JAR check passed: weather CSV summary.'
 
       - name: Check version and CI build number
         shell: pwsh

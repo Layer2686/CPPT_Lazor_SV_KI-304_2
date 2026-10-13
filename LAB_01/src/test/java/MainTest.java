@@ -1,11 +1,13 @@
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,24 +16,40 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MainTest {
     @Test
-    void printsGreetingExactly67Times() {
-        PrintStream originalOut = System.out;
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+    void processesValidRecordsAndReportsInvalidOnes(@TempDir Path tempDir) throws IOException {
+        Path input = tempDir.resolve("weather.csv");
+        Files.writeString(input, String.join("\n",
+                "2026-10-01;-3.25;50;1000;2",
+                "2026-10-02;4;100;990;5.5",
+                "2026-10-03;1;0;1010;0",
+                "2026-10-04;1;помилка;1000;1",
+                "2026-10-05;1;50;1000;-1") + "\n", StandardCharsets.UTF_8);
 
-        try (PrintStream capturedOut = new PrintStream(output, true, StandardCharsets.UTF_8)) {
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+
+        try (PrintStream capturedOut = new PrintStream(output, true, StandardCharsets.UTF_8);
+             PrintStream capturedErr = new PrintStream(errors, true, StandardCharsets.UTF_8)) {
             try {
                 System.setOut(capturedOut);
-                Main.main(new String[0]);
+                System.setErr(capturedErr);
+                Main.main(new String[] {"--input", input.toString()});
             } finally {
                 System.setOut(originalOut);
+                System.setErr(originalErr);
             }
         }
 
-        List<String> lines = output.toString(StandardCharsets.UTF_8).lines().toList();
-        assertEquals(67, lines.size());
-        for (String line : lines) {
-            assertEquals("Hello, world!", line);
-        }
+        String actualOutput = output.toString(StandardCharsets.UTF_8);
+        String actualErrors = errors.toString(StandardCharsets.UTF_8);
+        assertTrue(actualOutput.contains("Мінімальна температура: -3.25 °C"));
+        assertTrue(actualOutput.contains("Максимальна швидкість вітру: 5.50 м/с"));
+        assertTrue(actualOutput.contains("Середній рівень вологості: 50.00 %"));
+        assertTrue(actualOutput.contains("Кількість коректних записів: 3"));
+        assertTrue(actualErrors.contains("Рядок 4: вологість не є числом"));
+        assertTrue(actualErrors.contains("Рядок 5: вітер має бути скінченним невід’ємним числом"));
     }
 
     @Test
