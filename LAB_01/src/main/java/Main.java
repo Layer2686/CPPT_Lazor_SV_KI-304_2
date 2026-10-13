@@ -4,6 +4,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.List;
 import java.util.Locale;
@@ -62,15 +63,16 @@ public class Main {
             return;
             }
         }
-        processInput(inputPath);
+        processInput(inputPath, outputPath);
     }
 
-    private static void processInput(Path inputPath)
+    private static void processInput(Path inputPath, Path outputPath)
     {
         try
         {
             List<String> lines = readInput(inputPath);
             int validCount = 0;
+            List<String> errors = new ArrayList<>();
             double minTemperature = 0;
             double humiditySum = 0;
             double maxWind = 0;
@@ -81,7 +83,7 @@ public class Main {
                 String[] fields = line.split(";", -1);
                 if (fields.length != 5)
                 {
-                    System.err.println("Рядок " + (i + 1) + ": очікується 5 полів");
+                    errors.add("Рядок " + (i + 1) + ": очікується 5 полів");
                     continue;
                 }
                 double humidity;
@@ -93,41 +95,41 @@ public class Main {
                 try {
                     humidity = Double.parseDouble(fields[2].trim());
                     if (humidity < 0 || humidity > 100 || !Double.isFinite(humidity)) {
-                        System.err.println("Рядок " + (i + 1) + ": вологість має бути від 0 до 100; вхід: " + line);
+                        errors.add("Рядок " + (i + 1) + ": вологість має бути від 0 до 100; вхід: " + line);
                         continue;
                     }
                     currentField = "вітер";
 
                     wind = Double.parseDouble(fields[4].trim());
                     if (wind < 0 || !Double.isFinite(wind)) {
-                        System.err.println("Рядок " + (i + 1) + ": вітер має бути скінченним невід’ємним числом; вхід: " + line);
+                        errors.add("Рядок " + (i + 1) + ": вітер має бути скінченним невід’ємним числом; вхід: " + line);
                         continue;
                     }
 
                     currentField = "температура";
                     temperature = Double.parseDouble(fields[1].trim());
                     if (!Double.isFinite(temperature)) {
-                        System.err.println("Рядок " + (i + 1) + ": температура має бути скінченним числом; вхід: " + line);
+                        errors.add("Рядок " + (i + 1) + ": температура має бути скінченним числом; вхід: " + line);
                         continue;
                     }
 
                     currentField = "тиск";
                     pressure = Double.parseDouble(fields[3].trim());
                     if (pressure <= 0 || !Double.isFinite(pressure)) {
-                        System.err.println("Рядок " + (i + 1) + ": тиск має бути додатним скінченним числом; вхід: " + line);
+                        errors.add("Рядок " + (i + 1) + ": тиск має бути додатним скінченним числом; вхід: " + line);
                         continue;
                     }
 
                 }
                 catch(NumberFormatException e)
                 {
-                    System.err.println("Рядок " + (i + 1) + ": "
+                    errors.add("Рядок " + (i + 1) + ": "
                         + currentField + " не є числом; вхід: " + line);
                     continue;
                 }
                 if (!date.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))
                 {
-                    System.err.println("Рядок " + (i + 1) + ": Дата задана неправильно; вхід: " + line);
+                    errors.add("Рядок " + (i + 1) + ": Дата задана неправильно; вхід: " + line);
                     continue;
                 }
                 System.out.println("Рядок " + (i + 1) + ": дата " + date + ", температура " + temperature + " °C, вологість " + humidity +
@@ -143,28 +145,49 @@ public class Main {
                 }
                 validCount++;
             }
+            String reportText;
             if (validCount > 0)
             {
                 averageHumidity = humiditySum / validCount;
-                System.out.printf(Locale.ROOT, "Мінімальна температура: %.2f °C%n" +
+                reportText = String.format(Locale.ROOT, "Мінімальна температура: %.2f °C%n" +
                     "Максимальна швидкість вітру: %.2f м/с%n" +
-                    "Середній рівень вологості: %.2f %%%n", minTemperature, maxWind, averageHumidity);
+                    "Середній рівень вологості: %.2f %%%n" + "Кількість коректних записів: %d%n", minTemperature, maxWind, averageHumidity, validCount);
             }
             else
             {
-                System.err.println("Немає даних");
+                reportText = String.format(Locale.ROOT, "Немає даних%nКількість коректних записів: %d%n", validCount);
             }
+            if (!errors.isEmpty())
+            {
+                reportText += ("Помилки: " + System.lineSeparator() + String.join(System.lineSeparator(), errors) + System.lineSeparator());
+            }
+            System.out.print(reportText);
+            writeReport(outputPath, reportText);
 
-            System.out.println("Кількість коректних записів: " + validCount);
         }
         catch (IOException e)
         {
             System.err.println("Не вдалося прочитати файл " + inputPath + ": " + e.getMessage());
         }
 
+    }
 
+    private static void writeReport(Path outputpath, String reportText)
+    {
+        try
+        {
+            Path directory = outputpath.getParent();
+            if (directory != null)
+            {
+            Files.createDirectories(directory);
+            }
+            Files.writeString(outputpath,reportText, StandardCharsets.UTF_8);
 
-
+        }
+        catch(IOException e)
+        {
+            System.err.println("Неможливо записати звіт " + outputpath + ": " + e.getMessage());
+        }
 
     }
 

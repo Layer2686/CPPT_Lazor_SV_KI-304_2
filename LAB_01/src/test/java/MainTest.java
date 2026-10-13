@@ -18,6 +18,7 @@ class MainTest {
     @Test
     void processesValidRecordsAndReportsInvalidOnes(@TempDir Path tempDir) throws IOException {
         Path input = tempDir.resolve("weather.csv");
+        Path reportPath = tempDir.resolve("out/report.txt");
         Files.writeString(input, String.join("\n",
                 "2026-10-01;-3.25;50;1000;2",
                 "2026-10-02;4;100;990;5.5",
@@ -35,7 +36,7 @@ class MainTest {
             try {
                 System.setOut(capturedOut);
                 System.setErr(capturedErr);
-                Main.main(new String[] {"--input", input.toString()});
+                Main.main(new String[] {"--input", input.toString(), "--output", reportPath.toString()});
             } finally {
                 System.setOut(originalOut);
                 System.setErr(originalErr);
@@ -44,12 +45,15 @@ class MainTest {
 
         String actualOutput = output.toString(StandardCharsets.UTF_8);
         String actualErrors = errors.toString(StandardCharsets.UTF_8);
-        assertTrue(actualOutput.contains("Мінімальна температура: -3.25 °C"));
-        assertTrue(actualOutput.contains("Максимальна швидкість вітру: 5.50 м/с"));
-        assertTrue(actualOutput.contains("Середній рівень вологості: 50.00 %"));
-        assertTrue(actualOutput.contains("Кількість коректних записів: 3"));
-        assertTrue(actualErrors.contains("Рядок 4: вологість не є числом"));
-        assertTrue(actualErrors.contains("Рядок 5: вітер має бути скінченним невід’ємним числом"));
+        String actualReport = Files.readString(reportPath, StandardCharsets.UTF_8);
+        assertTrue(actualReport.contains("Мінімальна температура: -3.25 °C"));
+        assertTrue(actualReport.contains("Максимальна швидкість вітру: 5.50 м/с"));
+        assertTrue(actualReport.contains("Середній рівень вологості: 50.00 %"));
+        assertTrue(actualReport.contains("Кількість коректних записів: 3"));
+        assertTrue(actualReport.contains("Рядок 4: вологість не є числом"));
+        assertTrue(actualReport.contains("Рядок 5: вітер має бути скінченним невід’ємним числом"));
+        assertTrue(actualOutput.endsWith(actualReport));
+        assertEquals("", actualErrors);
     }
 
     @Test
