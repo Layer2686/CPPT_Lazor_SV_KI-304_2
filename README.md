@@ -34,6 +34,13 @@ java -jar LAB_01/target/lab01.jar --version
 
 Без параметрів запуск із директорії `LAB_01` читає `data/input.csv`.
 
+Для українського виводу в Windows PowerShell використовуйте UTF-8:
+
+```powershell
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv
+```
+
 У демонстраційному файлі є три коректні записи й дві помилки. Зараз програма
 показує коректні рядки, пояснює пропуск рядків 4 і 5 та виводить
 `Кількість коректних записів: 3`. Параметр `--output` показано в довідці,

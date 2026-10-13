@@ -52,12 +52,13 @@ jobs:
       - name: Run and check executable JAR
         shell: pwsh
         run: |
+          [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
           $jarPath = 'LAB_01/target/lab01.jar'
           if (-not (Test-Path -LiteralPath $jarPath -PathType Leaf)) {
             throw "Executable JAR is missing: $jarPath"
           }
 
-          $output = @(& java -jar $jarPath --input LAB_01/data/input.csv)
+          $output = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --input LAB_01/data/input.csv)
           if ($LASTEXITCODE -ne 0) {
             throw "JAR exited with code $LASTEXITCODE"
           }
