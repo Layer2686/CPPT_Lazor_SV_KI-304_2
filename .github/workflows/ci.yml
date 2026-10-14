@@ -58,9 +58,20 @@ jobs:
             throw "Executable JAR is missing: $jarPath"
           }
 
-          $output = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --input LAB_01/data/input.csv)
-          if ($LASTEXITCODE -ne 0) {
-            throw "JAR exited with code $LASTEXITCODE"
+          $jarPath = (Resolve-Path -LiteralPath $jarPath).Path
+          $inputPath = (Resolve-Path -LiteralPath 'LAB_01/data/input.csv').Path
+          $testDirectory = Join-Path $env:RUNNER_TEMP 'lab01-report'
+          New-Item -ItemType Directory -Path $testDirectory -Force | Out-Null
+          Push-Location $testDirectory
+          try {
+            # A filename without a parent must work from a temporary working directory.
+            $output = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --input $inputPath --output report.txt)
+            if ($LASTEXITCODE -ne 0) {
+              throw "JAR exited with code $LASTEXITCODE"
+            }
+            $report = Get-Content -LiteralPath 'report.txt' -Raw -Encoding utf8
+          } finally {
+            Pop-Location
           }
           $expectedLines = @(
             'Мінімальна температура: -5.50 °C'
@@ -73,7 +84,11 @@ jobs:
               throw "Expected JAR output line is missing: $line"
             }
           }
-          Write-Output 'JAR check passed: weather CSV summary.'
+          $consoleText = ($output -join [Environment]::NewLine) + [Environment]::NewLine
+          if ([string]::IsNullOrEmpty($report) -or -not $consoleText.EndsWith($report)) {
+            throw 'Console and UTF-8 file reports differ'
+          }
+          Write-Output 'JAR check passed: summary and UTF-8 report.txt without a parent directory.'
 
       - name: Check version and CI build number
         shell: pwsh
