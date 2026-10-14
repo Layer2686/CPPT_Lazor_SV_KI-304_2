@@ -139,7 +139,7 @@ lab01 1.0.0 (build 45)
 
 ## 6. GitHub Issues і Pull Request
 
-| Issue | Зміна | Pull Request |
+| Issue | Зміна | Pull Request / коміт |
 |---|---|---|
 | [#2](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/2), [#14](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/14) | Структура LAB_01, офіційний Wrapper і права виконання | [#15](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/15) |
 | [#16](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/16), [#17](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/17) | Усунення дубля Main і відновлення правил .gitignore | [#15](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/15) |
@@ -152,7 +152,7 @@ lab01 1.0.0 (build 45)
 | [#9](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/9) | Спільний консольний та файловий звіт із помилками | [#25](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/25) |
 | [#10](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/10) | Спрощені крайові тести та перевірка файлового звіту в CI | [#26](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/26) |
 | [#11](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/11) | README, REPORT, javadoc і підготовка до захисту | [#27](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/27) |
-| [#12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12) | Фінальна перевірка та тег v1.0.0 | [5ead70f](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/5ead70f1fd12ef1410944464a18d942facfa690c), [CI №45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115) |
+| [#12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12) | Фінальна перевірка та тег v1.0.0 | [#28](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/28), [5ead70f](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/5ead70f1fd12ef1410944464a18d942facfa690c), [CI №45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115) |
 
 Таблиця пов’язує зміни з Pull Request. Фінальну перевірку --help та
 документацію подано в PR #27; тег і результати його CI належать до #12.
