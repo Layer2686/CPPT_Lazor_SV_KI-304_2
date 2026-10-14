@@ -59,6 +59,24 @@ jobs:
           }
 
           $jarPath = (Resolve-Path -LiteralPath $jarPath).Path
+          $help = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --help)
+          if ($LASTEXITCODE -ne 0) {
+            throw "Help command exited with code $LASTEXITCODE"
+          }
+          $expectedHelpLines = @(
+            'Метеостанція: аналіз вимірювань із CSV'
+            '--help          показати цю довідку'
+            '--version       показати версію програми'
+            '--input ШЛЯХ    вказати вхідний CSV-файл'
+            '--output ШЛЯХ   вказати файл для звіту'
+          )
+          foreach ($line in $expectedHelpLines) {
+            if ($help -cnotcontains $line) {
+              throw "Expected help line is missing: $line"
+            }
+          }
+          Write-Output 'Help check passed: executable JAR documents all four options.'
+
           $inputPath = (Resolve-Path -LiteralPath 'LAB_01/data/input.csv').Path
           $testDirectory = Join-Path $env:RUNNER_TEMP 'lab01-report'
           New-Item -ItemType Directory -Path $testDirectory -Force | Out-Null
