@@ -8,32 +8,93 @@
 максимальну швидкість вітру. Один звіт із показниками та помилками
 виводиться в консоль і записується у файл UTF-8.
 
-## Збірка
+## Встановлення та отримання проєкту
 
-Потрібен JDK 21. Із кореня репозиторію виконайте:
+Потрібні Git, JDK 21 та інтернет для першої збірки. Maven встановить Wrapper.
+Якщо `JAVA_HOME` вже задана, вона має вказувати на JDK 21.
+
+**Ubuntu 24.04+** ([пакет JDK](https://packages.ubuntu.com/noble/openjdk-21-jdk)):
 
 ```sh
-# Linux / macOS
-./mvnw -B clean verify
+sudo apt update
+sudo apt install git openjdk-21-jdk
+```
 
-# Windows PowerShell
+**Arch / EndeavourOS** ([пакет JDK](https://archlinux.org/packages/extra/x86_64/jdk21-openjdk/)):
+
+```sh
+sudo pacman -Syu --needed git jdk21-openjdk
+sudo archlinux-java set java-21-openjdk
+```
+
+**macOS** із встановленим [Homebrew](https://brew.sh/)
+([Temurin 21](https://formulae.brew.sh/cask/temurin%4021)):
+
+```sh
+brew install git
+brew install --cask temurin@21
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+**Windows PowerShell** із WinGet
+([Git](https://git-scm.com/install/windows), [JDK](https://learn.microsoft.com/en-us/windows/dev-environment/java)):
+
+```powershell
+winget install --id Git.Git --exact
+winget install --id EclipseAdoptium.Temurin.21.JDK --exact
+```
+
+Після встановлення на Windows відкрийте новий термінал. Без пакетного менеджера
+встановіть [Git](https://git-scm.com/install/) та
+[Temurin JDK 21](https://adoptium.net/temurin/releases/?version=21) через інсталятори.
+Перевірте, що `java` та `javac` показують версію 21:
+
+```sh
+git --version
+java -version
+javac -version
+git clone https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2.git
+cd CPPT_Lazor_SV_KI-304_2
+```
+
+## Збірка
+
+Усі наступні команди виконуються **з кореня репозиторію**.
+Linux / macOS:
+
+```sh
+./mvnw -B clean verify
+```
+
+Windows PowerShell:
+
+```powershell
 .\mvnw.cmd -B clean verify
 ```
 
 Команда запускає тести й SpotBugs та створює виконуваний
 `LAB_01/target/lab01.jar`. Глобально встановлювати Maven не потрібно.
+Якщо на Linux/macOS виникло `Permission denied`, виконайте `chmod +x mvnw`.
 
 JUnit перевіряє валідацію CSV, чотири показники, CLI, UTF-8, помилки файлів
 і незалежність від локалі. Тестові файли створюються в тимчасових папках.
+
+HTML-документація коду (команда однакова для трьох ОС):
+
+```sh
+javadoc -private -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_01/target/apidocs LAB_01/src/main/java/Main.java
+```
+
+Відкрийте `LAB_01/target/apidocs/index.html` у браузері. `clean` видаляє
+згенеровані файли, тому документацію створюють після збірки.
 
 ## Запуск
 
 Із кореня репозиторію:
 
 ```sh
-java -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv --output out/report.txt
-java -jar LAB_01/target/lab01.jar --help
-java -jar LAB_01/target/lab01.jar --version
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv --output out/report.txt
 ```
 
 Без параметрів запуск із директорії `LAB_01` читає `data/input.csv`
@@ -44,8 +105,18 @@ java -jar LAB_01/target/lab01.jar --version
 
 ```powershell
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv --output out/report.txt
 ```
+
+Довідка й версія (команди однакові для трьох ОС):
+
+```sh
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --help
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --version
+```
+
+Версія програми — `1.0.0`; локальна збірка показує `build local`,
+збірка GitHub Actions — номер запуску CI. Звіт після запуску лежить у `out/report.txt`.
 
 У демонстраційному файлі є три коректні записи й дві помилки. Програма
 показує коректні рядки, а підсумковий звіт у консолі та файлі містить
@@ -83,4 +154,5 @@ date;temperature;humidity;pressure;wind
 ## Матеріали
 
 - [План лабораторної роботи](PLAN.md) — етапи й GitHub Issues.
+- [Звіт лабораторної роботи](REPORT.md).
 - [GitHub Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions) — перевірки на Ubuntu, Windows і macOS та JAR-артефакти.

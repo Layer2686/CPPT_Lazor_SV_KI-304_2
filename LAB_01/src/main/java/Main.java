@@ -9,9 +9,23 @@ import java.util.Properties;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Консольна метеостанція для варіанта 18 лабораторної роботи № 1.
+ * Читає CSV, перевіряє записи та формує звіт із чотирма показниками й помилками.
+ */
 public class Main {
 
+    /**
+     * Створює екземпляр класу Main.
+     */
+    public Main() {
+    }
 
+    /**
+     * Розбирає параметри запуску та запускає обробку CSV або виводить довідку чи версію.
+     *
+     * @param args параметри {@code --input}, {@code --output}, {@code --help} або {@code --version}
+     */
     public static void main(String[] args) {
         Path inputPath = Path.of("data/input.csv");
         Path outputPath = Path.of("out/report.txt");
@@ -66,6 +80,14 @@ public class Main {
         processInput(inputPath, outputPath);
     }
 
+    /**
+     * Перевіряє прочитані рядки й обчислює показники лише за коректними записами.
+     * Виводить підсумок із помилками в консоль і передає його для запису у файл.
+     * Помилки читання повідомляє через {@code System.err}.
+     *
+     * @param inputPath шлях до вхідного CSV-файла
+     * @param outputPath шлях до файла звіту
+     */
     private static void processInput(Path inputPath, Path outputPath)
     {
         try
@@ -172,6 +194,14 @@ public class Main {
 
     }
 
+    /**
+     * Створює потрібні папки й записує звіт у UTF-8, замінюючи попередній вміст файла.
+     * Для шляху без папки записує файл у робочу директорію.
+     * Помилки запису повідомляє через {@code System.err}.
+     *
+     * @param outputpath шлях до файла звіту
+     * @param reportText готовий текст звіту
+     */
     private static void writeReport(Path outputpath, String reportText)
     {
         try
@@ -191,6 +221,12 @@ public class Main {
 
     }
 
+    /**
+     * Читає ресурс {@code build-info.properties} і виводить версію та номер збірки.
+     *
+     * @throws IllegalStateException якщо ресурс відсутній або метадані неповні
+     * @throws UncheckedIOException якщо сталася помилка читання ресурсу
+     */
     private static void printVersion()
     {
         Properties buildInfo = new Properties();
@@ -216,6 +252,9 @@ public class Main {
         System.out.printf("lab01 %s (build %s)%n", version, buildNumber);
     }
 
+    /**
+     * Виводить призначення програми, приклад запуску та доступні параметри.
+     */
     private static void printHelp()
     {
 
@@ -229,6 +268,13 @@ public class Main {
 
     }
 
+    /**
+     * Читає всі рядки вхідного файла у кодуванні UTF-8.
+     *
+     * @param inputPath шлях до вхідного файла
+     * @return список прочитаних рядків
+     * @throws IOException якщо файл неможливо прочитати або декодувати як UTF-8
+     */
     private static List<String> readInput(Path inputPath) throws IOException
     {
         return Files.readAllLines(inputPath, StandardCharsets.UTF_8);
