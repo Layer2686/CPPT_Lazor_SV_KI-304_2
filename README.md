@@ -83,5 +83,4 @@ date;temperature;humidity;pressure;wind
 ## Матеріали
 
 - [План лабораторної роботи](PLAN.md) — етапи й GitHub Issues.
-- [Методичні вказівки](md/lab_01_1.md) та [вказівки з Git/GitHub](md/git_github.md).
 - [GitHub Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions) — перевірки на Ubuntu, Windows і macOS та JAR-артефакти.
