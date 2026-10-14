@@ -117,6 +117,8 @@ java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab0
 
 Версія програми — `1.0.0`; локальна збірка показує `build local`,
 збірка GitHub Actions — номер запуску CI. Звіт після запуску лежить у `out/report.txt`.
+Фінальна версія: [тег v1.0.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.0.0),
+[CI тега на трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115).
 
 У демонстраційному файлі є три коректні записи й дві помилки. Програма
 показує коректні рядки, а підсумковий звіт у консолі та файлі містить

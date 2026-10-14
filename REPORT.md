@@ -8,11 +8,13 @@
 - Операційна система локальної розробки: EndeavourOS Linux.
 - JDK: OpenJDK 21.0.12.1; компіляція з release 21.
 - Репозиторій: [CPPT_Lazor_SV_KI-304_2](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2).
-- Версія програми: 1.0.0. Перевірений стан main: [0dc14cb](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/0dc14cb286e2764506dc1fa9c05c6148df3bb5eb).
+- Версія програми: 1.0.0. Фінальний тег: [v1.0.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.0.0), коміт [5ead70f](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/5ead70f1fd12ef1410944464a18d942facfa690c).
 
 У репозиторії лабораторна робота розміщена в модулі LAB_01. Зміни
 виконувалися в робочих гілках і переносилися в main через Pull Request.
-Фінальний тег v1.0.0 ще не створено; це завдання [Issue #12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12).
+Тег v1.0.0 створено після злиття документації та перевірок у main.
+Фактичні посилання на його CI й артефакти додано до main після тегування;
+тег залишається на перевіреному коміті програми.
 Наведені нижче результати перевірені 14 жовтня 2026 року.
 
 ## 2. Мета роботи
@@ -126,13 +128,14 @@ args → main → readInput → рядки → поля та перевірки
 lab01 1.0.0 (build local)
 ~~~
 
-Завантажений Linux JAR із CI №38 вивів:
+Завантажений Linux JAR із CI тега №45 вивів:
 
 ~~~text
-lab01 1.0.0 (build 38)
+lab01 1.0.0 (build 45)
 ~~~
 
-Узгодження версії з фінальним Git-тегом v1.0.0 буде завершено в Issue #12.
+Версія 1.0.0 узгоджена в обох pom.xml, Git-тегу v1.0.0 та виводі --version.
+Номер 45 означає запуск CI, а не іншу версію програми.
 
 ## 6. GitHub Issues і Pull Request
 
@@ -149,7 +152,7 @@ lab01 1.0.0 (build 38)
 | [#9](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/9) | Спільний консольний та файловий звіт із помилками | [#25](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/25) |
 | [#10](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/10) | Спрощені крайові тести та перевірка файлового звіту в CI | [#26](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/26) |
 | [#11](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/11) | README, REPORT, javadoc і підготовка до захисту | [#27](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/27) |
-| [#12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12) | Фінальна перевірка та тег v1.0.0 | Наступний етап |
+| [#12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12) | Фінальна перевірка та тег v1.0.0 | [5ead70f](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/5ead70f1fd12ef1410944464a18d942facfa690c), [CI №45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115) |
 
 Таблиця пов’язує зміни з Pull Request. Фінальну перевірку --help та
 документацію подано в PR #27; тег і результати його CI належать до #12.
@@ -246,22 +249,35 @@ JUnit створює тимчасові папки; допоміжні мето�
 
 Додатково CI запускає зібраний JAR із тимчасової робочої папки, задає
 --output report.txt без батьківського каталогу та звіряє файловий звіт
-із підсумком у консолі. Також налаштовано запуск JAR із --help
-і перевірку тексту довідки; окремий крок перевіряє --version і номер збірки.
-Наведений нижче CI №38 передував додаванню окремої JAR-перевірки --help;
-у ньому --help перевірявся через JUnit.
+із підсумком у консолі. Також CI запускає JAR із --help і перевіряє
+текст довідки; окремий крок перевіряє --version і номер збірки.
 
-Підтверджений [CI №38](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380)
-для main / 0dc14cb:
+Підтверджений [CI тега №45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115)
+для v1.0.0 / [5ead70f](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/5ead70f1fd12ef1410944464a18d942facfa690c):
 
 | ОС | Збірка, тести, SpotBugs, JAR | Артефакт |
 |---|---|---|
-| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/job/115932208371) | [lab01-Linux-38](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/artifacts/11906117598) |
-| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/job/115932207638) | [lab01-Windows-38](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/artifacts/11905987544) |
-| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/job/115932207756) | [lab01-macOS-38](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38587189380/artifacts/11905572757) |
+| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/job/115962970385) | [lab01-Linux-45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/artifacts/11909798011) |
+| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/job/115962970120) | [lab01-Windows-45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/artifacts/11909936368) |
+| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/job/115962969811) | [lab01-macOS-45](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/38596059115/artifacts/11910375054) |
 
-Посилання та доступність артефактів перевірено під час підготовки звіту.
-Завантажений Linux JAR додатково запущено локально з --version.
+Посилання та доступність артефактів перевірено 14.10.2026.
+Завантажений Linux JAR додатково запущено локально з --version: build 45.
+
+Чисте клонування тега перевірено окремо:
+
+~~~sh
+git clone --branch v1.0.0 --single-branch https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2.git lab01-v1.0.0
+cd lab01-v1.0.0
+./mvnw -B clean verify
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_01/target/lab01.jar --input LAB_01/data/input.csv --output out/report.txt
+java -jar LAB_01/target/lab01.jar --version
+~~~
+
+На Windows для збірки використовується `.\mvnw.cmd -B clean verify`.
+Чиста збірка: 12 тестів без помилок, SpotBugs 0, JAR дає очікувані
+показники та `lab01 1.0.0 (build local)`. Генерація javadoc також
+пройшла без попереджень; локальні файли md/ не потрібні для збірки.
 
 ## 9. Документація
 
@@ -340,7 +356,8 @@ GitHub Actions. Відповідальність за поданий код і �
 командою; JUnit і SpotBugs перевіряють програму, а GitHub Actions виконує
 повний цикл на Ubuntu, Windows і macOS та публікує JAR-артефакти.
 
-До завершення фінального етапу залишається тег v1.0.0 та його перевірка.
+Фінальний тег v1.0.0 опублікований; його CI на трьох ОС та збірку
+з чистого клонування перевірено.
 За уточненням лаборанта, переданим студентом 14.10.2026, для здачі
 достатньо REPORT.md; окремий PDF/DOCX і відповіді на контрольні питання
 у звіті не потрібні. Питання залишаються в методичці для самоперевірки.
