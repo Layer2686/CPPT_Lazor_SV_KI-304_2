@@ -141,19 +141,18 @@ lab01 1.0.0 (build 38)
 | [#2](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/2), [#14](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/14) | Структура LAB_01, офіційний Wrapper і права виконання | [#15](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/15) |
 | [#16](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/16), [#17](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/17) | Усунення дубля Main і відновлення правил .gitignore | [#15](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/15) |
 | [#3](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/3) | JUnit, SpotBugs і виконуваний JAR | [#18](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/18) |
-| [#4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4) | CI на трьох ОС і JAR-артефакти | [#19](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/19), [#26](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/26) |
+| [#4](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/4) | CI на трьох ОС і JAR-артефакти | [#19](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/19), [#26](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/26), [#27](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/27) |
 | [#5](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/5) | --version, кеш Maven і номер CI-збірки | [#20](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/20) |
 | [#6](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/6) | Ролі ШІ й шаблони GitHub | [#13](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/13) |
 | [#7](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/7) | CSV варіанта 18 та правила перевірки | [#21](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/21) |
 | [#8](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/8), [#24](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/24) | CLI, обробка CSV та UTF-8 виводу Windows | [#23](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/23) |
 | [#9](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/9) | Спільний консольний та файловий звіт із помилками | [#25](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/25) |
 | [#10](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/10) | Спрощені крайові тести та перевірка файлового звіту в CI | [#26](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/26) |
-| [#11](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/11) | README, REPORT, javadoc і підготовка до захисту | Поточний етап; PR ще не створений |
+| [#11](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/11) | README, REPORT, javadoc і підготовка до захисту | [#27](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/27) |
 | [#12](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/12) | Фінальна перевірка та тег v1.0.0 | Наступний етап |
 
-Таблиця відображає виконані зміни й заплановані етапи, а не оголошує всі
-Issues закритими. Зокрема, #4 ще відкрите, хоча його CI-функціональність
-підтверджена наведеними нижче запусками; #11 і #12 також ще не закриті.
+Таблиця пов’язує зміни з Pull Request. Фінальну перевірку --help та
+документацію подано в PR #27; тег і результати його CI належать до #12.
 
 ## 7. Приклади роботи
 
