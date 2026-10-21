@@ -75,9 +75,35 @@ date;temperature;humidity;pressure;wind
 | [TemperatureHumidity.java](src/main/java/ua/lpnu/kzp/lab02/TemperatureHumidity.java) | record, незмінна пара, перевірки двох чисел |
 | [WeatherReading.java](src/main/java/ua/lpnu/kzp/lab02/WeatherReading.java) | private final, конструктор, fromCsv, геттери, toString, builder |
 | [WeatherReport.java](src/main/java/ua/lpnu/kzp/lab02/WeatherReport.java) | цикл за List<WeatherReading>, статистика й формат звіту |
-| [Main.java](src/main/java/ua/lpnu/kzp/lab02/Main.java) | CLI, читання, перехоплення помилок рядків, виклики моделі та запис файла |
+| [ArgumentParser.java](src/main/java/ua/lpnu/kzp/lab02/ArgumentParser.java) | відомі параметри, перевірка значень, шляхи за замовчуванням |
+| [CommandLineOptions.java](src/main/java/ua/lpnu/kzp/lab02/CommandLineOptions.java) | record із результатом аналізу аргументів |
+| [WeatherFileService.java](src/main/java/ua/lpnu/kzp/lab02/WeatherFileService.java) | читання й запис UTF-8, створення папок |
+| [ApplicationInfo.java](src/main/java/ua/lpnu/kzp/lab02/ApplicationInfo.java) | довідка й метадані версії |
+| [WeatherController.java](src/main/java/ua/lpnu/kzp/lab02/WeatherController.java) | керування обробкою, помилки рядків, виклики моделі, звіту та файлового сервісу |
+| [Main.java](src/main/java/ua/lpnu/kzp/lab02/Main.java) | лише виклик парсера, створення й запуск контролера, повідомлення про помилку параметрів |
 | [WeatherReadingTest.java](src/test/java/ua/lpnu/kzp/lab02/WeatherReadingTest.java) | 12 прямих тестів нової моделі |
 | [MainTest.java](src/test/java/ua/lpnu/kzp/lab02/MainTest.java) | 12 перенесених тестів поведінки |
+| [ArgumentParserTest.java](src/test/java/ua/lpnu/kzp/lab02/ArgumentParserTest.java) | 6 тестів шляхів, режимів і хибних аргументів |
+| [WeatherFileServiceTest.java](src/test/java/ua/lpnu/kzp/lab02/WeatherFileServiceTest.java) | 3 тести UTF-8, заміни вмісту й помилок файлів |
+
+За уточненням викладача, починаючи з №2 Main є лише точкою запуску.
+Він не містить циклу аргументів, файлових операцій або обробки CSV.
+
+```mermaid
+flowchart TD
+    Main --> ArgumentParser
+    ArgumentParser --> CommandLineOptions
+    Main --> WeatherController
+    WeatherController --> WeatherFileService
+    WeatherController --> WeatherReading
+    WeatherController --> WeatherReport
+    WeatherController --> ApplicationInfo
+```
+
+Контролер отримує перевірені параметри й керує роботою інших класів.
+Файловий сервіс передає IOException контролеру; той окремо пояснює помилки
+читання та запису. Main не друкує додаткового коду завершення: збережено
+попередній консольний результат.
 
 Фабрика перевіряє структуру й перетворює числа. Спільні методи валідації
 дозволяють зберегти порядок помилок LAB_01, не дублюючи самі правила.
@@ -119,7 +145,10 @@ javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_02/targ
 
 Початкова сторінка — `LAB_02/target/apidocs/index.html`; clean видаляє її.
 
-Версія LAB_02 — 1.1.0, LAB_01 — 1.0.0. Локально --version показує build local,
-у GitHub Actions — номер запуску. [Тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0),
-[CI тега на трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
+Версія LAB_02 — 1.1.1, LAB_01 — 1.0.0. Локально --version показує build local,
+у GitHub Actions — номер запуску. [Попередній тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0),
+[CI попереднього тега на трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
 [Звіт](REPORT.md), [план та Issues](PLAN.md).
+
+Архітектурне уточнення: [Issue #37](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/37).
+Новий тег v1.1.1 та його фактичні результати додаються після перевірки.

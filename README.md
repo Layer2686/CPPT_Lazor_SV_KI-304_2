@@ -5,11 +5,11 @@
 | Робота | Реалізація | Версія | Документація |
 | --- | --- | --- | --- |
 | [LAB_01](LAB_01) | Обробка CSV через рядки та змінні | 1.0.0 | [Звіт №1](REPORT.md) |
-| [LAB_02](LAB_02) | Класи, record, конструктор, fromCsv і builder | 1.1.0 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
+| [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
 
 `./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє обидві роботи.
 Команди запуску нижче демонструють LAB_01; окремі команди LAB_02 — за посиланням у таблиці.
-Фінальна версія №2: [v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
+Попередній перевірений зріз №2: [v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
 
 Консольна програма на Java читає вимірювання метеостанції з CSV-файла,
 пропускає некоректні записи з поясненням і обчислює показники за коректними
