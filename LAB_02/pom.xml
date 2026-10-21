@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>lab02</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>Лабораторна робота № 2</name>
     <description>Варіант 18 — метеостанція</description>
 
