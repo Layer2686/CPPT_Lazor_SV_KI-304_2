@@ -20,5 +20,6 @@
 
     <modules>
         <module>LAB_01</module>
+        <module>LAB_02</module>
     </modules>
 </project>

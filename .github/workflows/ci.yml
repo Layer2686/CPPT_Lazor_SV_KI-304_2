@@ -37,6 +37,7 @@ jobs:
           cache-dependency-path: |
             pom.xml
             LAB_01/pom.xml
+            LAB_02/pom.xml
             .mvn/wrapper/maven-wrapper.properties
 
       - name: Verify with Maven Wrapper (Unix)
@@ -49,82 +50,29 @@ jobs:
         shell: pwsh
         run: .\mvnw.cmd -B "-Dbuild.number=${{ github.run_number }}" clean verify
 
-      - name: Run and check executable JAR
+      - name: Check both JARs, versions and identical reports
+        shell: pwsh
+        run: ./.github/scripts/check-jars.ps1 -BuildNumber '${{ github.run_number }}'
+
+      - name: Generate LAB_02 Javadoc
         shell: pwsh
         run: |
-          [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
-          $jarPath = 'LAB_01/target/lab01.jar'
-          if (-not (Test-Path -LiteralPath $jarPath -PathType Leaf)) {
-            throw "Executable JAR is missing: $jarPath"
-          }
-
-          $jarPath = (Resolve-Path -LiteralPath $jarPath).Path
-          $help = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --help)
+          $sources = @(Get-ChildItem 'LAB_02/src/main/java' -Recurse -Filter '*.java' | ForEach-Object { $_.FullName })
+          & javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_02/target/apidocs @sources
           if ($LASTEXITCODE -ne 0) {
-            throw "Help command exited with code $LASTEXITCODE"
+            throw "Javadoc exited with code $LASTEXITCODE"
           }
-          $expectedHelpLines = @(
-            'Метеостанція: аналіз вимірювань із CSV'
-            '--help          показати цю довідку'
-            '--version       показати версію програми'
-            '--input ШЛЯХ    вказати вхідний CSV-файл'
-            '--output ШЛЯХ   вказати файл для звіту'
-          )
-          foreach ($line in $expectedHelpLines) {
-            if ($help -cnotcontains $line) {
-              throw "Expected help line is missing: $line"
-            }
-          }
-          Write-Output 'Help check passed: executable JAR documents all four options.'
 
-          $inputPath = (Resolve-Path -LiteralPath 'LAB_01/data/input.csv').Path
-          $testDirectory = Join-Path $env:RUNNER_TEMP 'lab01-report'
-          New-Item -ItemType Directory -Path $testDirectory -Force | Out-Null
-          Push-Location $testDirectory
-          try {
-            # A filename without a parent must work from a temporary working directory.
-            $output = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jarPath --input $inputPath --output report.txt)
-            if ($LASTEXITCODE -ne 0) {
-              throw "JAR exited with code $LASTEXITCODE"
-            }
-            $report = Get-Content -LiteralPath 'report.txt' -Raw -Encoding utf8
-          } finally {
-            Pop-Location
-          }
-          $expectedLines = @(
-            'Мінімальна температура: -5.50 °C'
-            'Максимальна швидкість вітру: 7.50 м/с'
-            'Середній рівень вологості: 70.00 %'
-            'Кількість коректних записів: 3'
-          )
-          foreach ($line in $expectedLines) {
-            if ($output -cnotcontains $line) {
-              throw "Expected JAR output line is missing: $line"
-            }
-          }
-          $consoleText = ($output -join [Environment]::NewLine) + [Environment]::NewLine
-          if ([string]::IsNullOrEmpty($report) -or -not $consoleText.EndsWith($report)) {
-            throw 'Console and UTF-8 file reports differ'
-          }
-          Write-Output 'JAR check passed: summary and UTF-8 report.txt without a parent directory.'
-
-      - name: Check version and CI build number
-        shell: pwsh
-        run: |
-          $jarPath = 'LAB_01/target/lab01.jar'
-          $expected = 'lab01 1.0.0 (build ${{ github.run_number }})'
-          $actual = @(& java -jar $jarPath --version)
-          if ($LASTEXITCODE -ne 0) {
-            throw "Version command exited with code $LASTEXITCODE"
-          }
-          if ($actual.Count -ne 1 -or $actual[0] -cne $expected) {
-            throw "Expected '$expected', got '$($actual -join ', ')'"
-          }
-          Write-Output "Version check passed: $expected"
-
-      - name: Upload executable JAR
+      - name: Upload LAB_01 executable JAR
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: lab01-${{ runner.os }}-${{ github.run_number }}
           path: LAB_01/target/lab01.jar
+          if-no-files-found: error
+
+      - name: Upload LAB_02 executable JAR
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lab02-${{ runner.os }}-${{ github.run_number }}
+          path: LAB_02/target/lab02.jar
           if-no-files-found: error
