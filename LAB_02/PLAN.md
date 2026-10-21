@@ -26,3 +26,11 @@ TemperatureHumidity, toString, JUnit, SpotBugs, обидва JAR, CI трьох 
 
 Версії: parent/агрегатор і LAB_01 — 1.0.0; LAB_02 явно перевизначає версію на 1.1.0.
 Не потрібно змінювати першу програму заради нового модуля.
+
+## Підтверджені результати
+
+Реалізація змерджена в [PR #35](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/35), #30–#33 закриті.
+[Тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0) та [CI №56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784) перевірені:
+три ОС, 36 тестів, SpotBugs 0, обидва JAR, порівняння результатів, javadoc
+і шість артефактів. Чисте клонування успішно збирається; завантажений
+Linux JAR показує build 56. Остаточні докази наведені у REPORT.md.
