@@ -137,36 +137,35 @@ UTF-8, як описано в README. CI виконує clean verify на Ubuntu
 запускає обидва JAR, читає очікувану версію з POM і порівнює звіти двох програм.
 Кожна ОС публікує окремі lab01/lab02 артефакти. Javadoc генерується з -Werror.
 
-Попередній [тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0) позначає коміт
-[3cbb3bb](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/3cbb3bbdb2b008df9de737ea509aa694a8808375).
-[CI тега №56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784) успішний на всіх трьох ОС:
-36 тестів у попередній версії, SpotBugs 0, сумісність обох JAR, версії й javadoc без попереджень.
-Ці результати передують винесенню контролера; докази v1.1.1 додаються після перевірки.
+Фінальний [тег v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1) позначає виправлену архітектуру,
+коміт [41111a6](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/41111a67690b3983eea47cb6c8c045c6430f3b5b).
+[CI тега №64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246) успішний на трьох ОС:
+LAB_01 — 12 тестів, LAB_02 — 33; SpotBugs 0, обидва JAR, сумісність звітів,
+перевірки версій і javadoc без попереджень. Main у цьому тегу має 22 рядки.
 
 | ОС | Перевірка | JAR №1 | JAR №2 |
 | --- | --- | --- | --- |
-| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/job/119345360871) | [lab01-Linux-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12361630883) | [lab02-Linux-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12360159364) |
-| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/job/119345360780) | [lab01-Windows-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12360184375) | [lab02-Windows-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12360104456) |
-| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/job/119345360679) | [lab01-macOS-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12361765584) | [lab02-macOS-56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784/artifacts/12360913246) |
+| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/job/119365515788) | [lab01-Linux-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12365835289) | [lab02-Linux-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12365980026) |
+| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/job/119365515488) | [lab01-Windows-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12363704927) | [lab02-Windows-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12363734839) |
+| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/job/119365516121) | [lab01-macOS-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12364813027) | [lab02-macOS-64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246/artifacts/12365152807) |
 
-Посилання та доступність артефактів перевірено 21.10.2026.
-Завантажений Linux JAR додатково запущено: `lab02 1.1.0 (build 56)`;
-консоль і файловий звіт збігаються з контролем LAB_01.
+Посилання й артефакти перевірено 21.10.2026. Завантажений Linux JAR показує
+`lab02 1.1.1 (build 64)`; stdout і файл звіту побайтово збігаються з результатом
+до винесення контролера та з LAB_01.
 
-Чисте клонування фінального тега перевірено окремо:
+Чисте клонування тега перевірено окремо:
 
 ```sh
-git clone --branch v1.1.0 --single-branch https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2.git lab02-v1.1.0
-cd lab02-v1.1.0
+git clone --branch v1.1.1 --single-branch https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2.git lab02-v1.1.1
+cd lab02-v1.1.1
 ./mvnw -B clean verify
 ```
 
-Результат: 12+24 тести, SpotBugs 0, обидва JAR запускаються й дають однаковий
-консольний/файловий звіт. Локальні версії — `lab01 1.0.0 (build local)` та
-`lab02 1.1.0 (build local)`. На Windows використовується `.\mvnw.cmd`.
-Версія продукту й номер CI-збірки — різні значення; parent/LAB_01 залишаються
-1.0.0, у перевіреному зрізі LAB_02 — 1.1.0. Тег позначає попередній код; фактичні посилання на його
-CI та артефакти додаються до main окремим PR після тегування.
+Результат: 12+33 тести, SpotBugs 0; обидва JAR запускаються й дають однаковий
+звіт. На Windows використовується `.\mvnw.cmd`. Локально версія LAB_02 —
+`lab02 1.1.1 (build local)`, LAB_01 — `lab01 1.0.0 (build local)`.
+Тег v1.1.0 залишається попереднім зрізом. Фактичні посилання на CI нового
+тега додаються до main після тегування, без переміщення самого тега.
 
 
 ## 8. GitHub Issues та Pull Request
@@ -179,7 +178,7 @@ CI та артефакти додаються до main окремим PR піс
 | [#32](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/32) | LAB_02: зберегти звіт і додати тести об’єктної моделі | [PR #35](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/35), [CI №56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784) |
 | [#33](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/33) | LAB_02: перевіряти обидва модулі та JAR у GitHub Actions | [PR #35](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/35), [CI №56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784) |
 | [#34](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/34) | LAB_02: документація, порівняння реалізацій і фінальний тег | [Тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0), [CI №56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784), чисте клонування |
-| [#37](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/37) | Малий Main, парсер параметрів, контролер та файловий сервіс | Локальні verify, javadoc і порівняння результату; CI v1.1.1 після публікації |
+| [#37](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/37) | Малий Main, парсер параметрів, контролер та файловий сервіс | [PR #38](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/38), [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI №64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246) |
 
 Реалізацію змерджено через PR #35; остаточні докази тега додано окремим PR.
 
