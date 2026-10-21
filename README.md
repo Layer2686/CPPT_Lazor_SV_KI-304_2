@@ -9,7 +9,7 @@
 
 `./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє обидві роботи.
 Команди запуску нижче демонструють LAB_01; окремі команди LAB_02 — за посиланням у таблиці.
-Попередній перевірений зріз №2: [v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
+Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 
 Консольна програма на Java читає вимірювання метеостанції з CSV-файла,
 пропускає некоректні записи з поясненням і обчислює показники за коректними

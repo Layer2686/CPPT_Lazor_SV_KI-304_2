@@ -146,9 +146,9 @@ javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_02/targ
 Початкова сторінка — `LAB_02/target/apidocs/index.html`; clean видаляє її.
 
 Версія LAB_02 — 1.1.1, LAB_01 — 1.0.0. Локально --version показує build local,
-у GitHub Actions — номер запуску. [Попередній тег v1.1.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.0),
-[CI попереднього тега на трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39635678784).
+у GitHub Actions — номер запуску. [Тег v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1),
+[CI тега на трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 [Звіт](REPORT.md), [план та Issues](PLAN.md).
 
 Архітектурне уточнення: [Issue #37](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/37).
-Новий тег v1.1.1 та його фактичні результати додаються після перевірки.
+Версію v1.1.1 перевірено: 45 тестів, SpotBugs 0, обидва JAR і javadoc на трьох ОС.
