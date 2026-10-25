@@ -9,18 +9,23 @@ import java.nio.file.Path;
  * @param outputPath шлях до звіту
  * @param help чи потрібно показати лише довідку
  * @param version чи потрібно показати лише версію
+ * @param danger чи потрібно показати додатковий аналіз небезпеки
  */
-public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version) {
+public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version, boolean danger)
+{
     /**
      * Перевіряє наявність шляхів і сумісність режимів.
      *
      * @throws IllegalArgumentException якщо шляху немає або вибрано обидва режими
      */
-    public CommandLineOptions {
-        if (inputPath == null || outputPath == null) {
+    public CommandLineOptions
+    {
+        if (inputPath == null || outputPath == null)
+        {
             throw new IllegalArgumentException("Шляхи не можуть бути null");
         }
-        if (help && version) {
+        if (help && version)
+        {
             throw new IllegalArgumentException("Довідка та версія — окремі режими запуску");
         }
     }

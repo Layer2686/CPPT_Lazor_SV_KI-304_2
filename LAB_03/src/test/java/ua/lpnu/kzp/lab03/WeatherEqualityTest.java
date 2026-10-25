@@ -12,9 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Рівність вимірювань, контракт хешування та відсутність дублювання в HashSet. */
-class WeatherEqualityTest {
+class WeatherEqualityTest
+{
     @Test
-    void equalityHandlesItselfNullAndOtherTypes() {
+    void equalityHandlesItselfNullAndOtherTypes()
+    {
         WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading storm = new StormReading("2026-09-01", 10, 70, 1013, 20);
 
@@ -26,7 +28,8 @@ class WeatherEqualityTest {
     }
 
     @Test
-    void dailyEqualityIsSymmetricTransitiveAndHasMatchingHashes() {
+    void dailyEqualityIsSymmetricTransitiveAndHasMatchingHashes()
+    {
         WeatherReading first = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading second = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading third = WeatherReading.fromCsv("2026-09-01;10;70;1013;7.5");
@@ -40,7 +43,8 @@ class WeatherEqualityTest {
     }
 
     @Test
-    void stormReadingsAlsoUseValueEquality() {
+    void stormReadingsAlsoUseValueEquality()
+    {
         WeatherReading first = new StormReading("2026-09-01", 10, 70, 1013, 15);
         WeatherReading second = WeatherReading.fromCsv("2026-09-01;10;70;1013;15");
 
@@ -49,7 +53,8 @@ class WeatherEqualityTest {
     }
 
     @Test
-    void changingAnyMeasurementFieldMakesReadingsDifferent() {
+    void changingAnyMeasurementFieldMakesReadingsDifferent()
+    {
         WeatherReading original = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
 
         assertNotEquals(original, new DailyReading("2026-09-02", 10, 70, 1013, 7.5));
@@ -60,7 +65,8 @@ class WeatherEqualityTest {
     }
 
     @Test
-    void hashSetRemovesEqualReadingsButKeepsDifferentOnes() {
+    void hashSetRemovesEqualReadingsButKeepsDifferentOnes()
+    {
         Set<WeatherReading> unique = new HashSet<>();
         unique.add(new DailyReading("2026-09-01", 10, 70, 1013, 7.5));
         unique.add(new DailyReading("2026-09-01", 10, 70, 1013, 7.5));
@@ -74,7 +80,8 @@ class WeatherEqualityTest {
     }
 
     @Test
-    void valueEqualityDoesNotRemoveDuplicateRecordsFromStandardReport() {
+    void valueEqualityDoesNotRemoveDuplicateRecordsFromStandardReport()
+    {
         WeatherReading first = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading second = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
 

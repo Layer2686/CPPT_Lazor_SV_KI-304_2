@@ -7,7 +7,8 @@ import java.util.Objects;
  * Одне незмінне й перевірене вимірювання метеостанції.
  * Температура та вологість зберігаються разом у {@link TemperatureHumidity}.
  */
-public abstract sealed class WeatherReading permits DailyReading, StormReading {
+public abstract sealed class WeatherReading permits DailyReading, StormReading
+{
     private final String date;
     private final TemperatureHumidity temperatureHumidity;
     private final double pressure;
@@ -28,7 +29,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
         this.temperatureHumidity = new TemperatureHumidity(temperature, humidity);
         this.wind = validateWind(wind);
         this.pressure = validatePressure(pressure);
-        if (date == null || !date.trim().matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+        if (date == null || !date.trim().matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+        {
             throw new IllegalArgumentException("Дата задана неправильно");
         }
         this.date = date.trim();
@@ -64,16 +66,20 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      * @return коректне вимірювання
      * @throws IllegalArgumentException якщо рядок null, структура або значення хибні
      */
-    public static WeatherReading fromCsv(String line) {
-        if (line == null) {
+    public static WeatherReading fromCsv(String line)
+    {
+        if (line == null)
+        {
             throw new IllegalArgumentException("Рядок не може бути null");
         }
         String[] fields = line.split(";", -1);
-        if (fields.length != 5) {
+        if (fields.length != 5)
+        {
             throw new IllegalArgumentException("очікується 5 полів");
         }
         String currentField = "вологість";
-        try {
+        try
+        {
             double humidity = TemperatureHumidity.validateHumidity(
                     Double.parseDouble(fields[2].trim()));
             currentField = "вітер";
@@ -84,20 +90,26 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
             currentField = "тиск";
             double pressure = validatePressure(Double.parseDouble(fields[3].trim()));
             return createReading(fields[0].trim(), temperature, humidity, pressure, wind);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             throw new IllegalArgumentException(currentField + " не є числом", e);
         }
     }
 
-    private static double validatePressure(double pressure) {
-        if (!Double.isFinite(pressure) || pressure <= 0) {
+    private static double validatePressure(double pressure)
+    {
+        if (!Double.isFinite(pressure) || pressure <= 0)
+        {
             throw new IllegalArgumentException("тиск має бути додатним скінченним числом");
         }
         return pressure;
     }
 
-    private static double validateWind(double wind) {
-        if (!Double.isFinite(wind) || wind < 0) {
+    private static double validateWind(double wind)
+    {
+        if (!Double.isFinite(wind) || wind < 0)
+        {
             throw new IllegalArgumentException("вітер має бути скінченним невід’ємним числом");
         }
         return wind;
@@ -108,7 +120,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return дата вимірювання у форматі YYYY-MM-DD
      */
-    public String getDate() {
+    public String getDate()
+    {
         return date;
     }
 
@@ -117,7 +130,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return температура у °C
      */
-    public double getTemperature() {
+    public double getTemperature()
+    {
         return temperatureHumidity.temperature();
     }
 
@@ -126,7 +140,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return відносна вологість у %
      */
-    public double getHumidity() {
+    public double getHumidity()
+    {
         return temperatureHumidity.humidity();
     }
 
@@ -135,7 +150,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return перевірена незмінна пара температури й вологості
      */
-    public TemperatureHumidity getTemperatureHumidity() {
+    public TemperatureHumidity getTemperatureHumidity()
+    {
         return temperatureHumidity;
     }
 
@@ -144,7 +160,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return атмосферний тиск у гПа
      */
-    public double getPressure() {
+    public double getPressure()
+    {
         return pressure;
     }
 
@@ -153,7 +170,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return швидкість вітру у м/с
      */
-    public double getWind() {
+    public double getWind()
+    {
         return wind;
     }
 
@@ -163,7 +181,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      * @return опис вимірювання з двома десятковими знаками та одиницями
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         return String.format(Locale.ROOT, "%s: %.2f °C, %.2f %%, %.2f гПа, %.2f м/с",
                 date, getTemperature(), getHumidity(), pressure, wind);
     }
@@ -176,22 +195,24 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
     @Override
     public boolean equals(Object other)
     {
-        if (this == other) {
+        if (this == other)
+        {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (other == null || getClass() != other.getClass())
+        {
             return false;
         }
-        WeatherReading reading = (WeatherReading) other;
-        return date.equals(reading.date) && temperatureHumidity.equals(reading.temperatureHumidity) && Double.compare (wind, reading.wind) == 0
-            && Double.compare (pressure, reading.pressure) == 0;
+        WeatherReading reading = (WeatherReading)other;
+        return date.equals(reading.date) && temperatureHumidity.equals(reading.temperatureHumidity) && Double.compare(wind, reading.wind) == 0 && Double.compare(pressure, reading.pressure) == 0;
     }
     /**
      * Обчислює хеш за тими самими даними, які використовує equals.
      * @return хеш-код класу, дати, тиску, вітру й пари температури та вологості
      */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(getClass(), date, pressure, wind, temperatureHumidity);
     }
     /**
@@ -199,7 +220,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      *
      * @return новий будівник, у якому потрібно задати всі п’ять полів
      */
-    public static Builder builder() {
+    public static Builder builder()
+    {
         return new Builder();
     }
 
@@ -207,14 +229,16 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
      * Поетапно збирає параметри; {@link #build()} завжди використовує конструктор.
      * Сам будівник змінний і призначений для використання в одному потоці.
      */
-    public static final class Builder {
+    public static final class Builder
+    {
         private String date;
         private double temperature = Double.NaN;
         private double humidity = Double.NaN;
         private double pressure = Double.NaN;
         private double wind = Double.NaN;
 
-        private Builder() {
+        private Builder()
+        {
         }
 
         /**
@@ -223,7 +247,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @param value дата YYYY-MM-DD
          * @return цей будівник
          */
-        public Builder date(String value) {
+        public Builder date(String value)
+        {
             date = value;
             return this;
         }
@@ -234,7 +259,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @param value температура у °C
          * @return цей будівник
          */
-        public Builder temperature(double value) {
+        public Builder temperature(double value)
+        {
             temperature = value;
             return this;
         }
@@ -245,7 +271,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @param value вологість у %
          * @return цей будівник
          */
-        public Builder humidity(double value) {
+        public Builder humidity(double value)
+        {
             humidity = value;
             return this;
         }
@@ -256,7 +283,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @param value тиск у гПа
          * @return цей будівник
          */
-        public Builder pressure(double value) {
+        public Builder pressure(double value)
+        {
             pressure = value;
             return this;
         }
@@ -267,7 +295,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @param value вітер у м/с
          * @return цей будівник
          */
-        public Builder wind(double value) {
+        public Builder wind(double value)
+        {
             wind = value;
             return this;
         }
@@ -278,7 +307,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
          * @return перевірене вимірювання
          * @throws IllegalArgumentException якщо поле не задано або воно некоректне
          */
-        public WeatherReading build() {
+        public WeatherReading build()
+        {
             return createReading(date, temperature, humidity, pressure, wind);
         }
     }

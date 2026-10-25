@@ -6,8 +6,10 @@ import java.io.UncheckedIOException;
 import java.util.Properties;
 
 /** Виводить довідку та версію застосунку без читання метеоданих. */
-public final class ApplicationInfo {
-    private ApplicationInfo() {
+public final class ApplicationInfo
+{
+    private ApplicationInfo()
+    {
     }
 
     /**
@@ -26,15 +28,15 @@ public final class ApplicationInfo {
                 throw new IllegalStateException("Build metadata is missing; build with Maven Wrapper");
             }
             buildInfo.load(input);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw new UncheckedIOException("Cannot read build metadata", e);
         }
 
         String version = buildInfo.getProperty("app.version");
         String buildNumber = buildInfo.getProperty("build.number");
-        if (version == null || version.isBlank() || version.contains("${")
-            || buildNumber == null || buildNumber.isBlank() || buildNumber.contains("${"))
+        if (version == null || version.isBlank() || version.contains("${") || buildNumber == null || buildNumber.isBlank() || buildNumber.contains("${"))
         {
             throw new IllegalStateException("Build metadata is incomplete");
         }
@@ -49,12 +51,14 @@ public final class ApplicationInfo {
 
         System.out.println("Метеостанція: аналіз вимірювань із CSV");
         System.out.println("Запуск: java -jar LAB_03/target/lab03.jar [параметри]");
-        System.out.println("--help          показати цю довідку\n" +
-            "--version       показати версію програми\n" +
-            "--input ШЛЯХ    вказати вхідний CSV-файл\n" +
-            "--output ШЛЯХ   вказати файл для звіту\n");
-
-
+        System.out.println("--help          показати цю довідку\n"
+                           +
+                           "--version       показати версію програми\n"
+                           +
+                           "--input ШЛЯХ    вказати вхідний CSV-файл\n"
+                           +
+                           "--output ШЛЯХ   вказати файл для звіту\n"
+                           +
+                           "--danger        показати додатковий аналіз небезпеки\n");
     }
-
 }

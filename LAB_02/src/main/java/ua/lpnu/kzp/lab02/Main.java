@@ -1,8 +1,10 @@
 package ua.lpnu.kzp.lab02;
 
 /** Точка запуску: передає параметри парсеру та запускає контролер. */
-public final class Main {
-    private Main() {
+public final class Main
+{
+    private Main()
+    {
     }
 
     /**
@@ -10,12 +12,16 @@ public final class Main {
      *
      * @param args параметри командного рядка
      */
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args)
+    {
+        try
+        {
             CommandLineOptions options = ArgumentParser.parse(args);
             WeatherController controller = new WeatherController();
             controller.run(options);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             System.err.println(e.getMessage());
         }
     }

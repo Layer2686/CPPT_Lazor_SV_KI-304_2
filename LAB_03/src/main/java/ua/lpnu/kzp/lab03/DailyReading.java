@@ -13,18 +13,19 @@ public final class DailyReading extends WeatherReading
      */
     public DailyReading(String date, double temperature, double humidity, double pressure, double wind)
     {
-       super(date, temperature, humidity, pressure, wind);
-       if (wind >= 15)
-       {
-           throw new IllegalArgumentException("Для звичайного вимірювання вітер має бути меншим за 15 м/с");
-       }
+        super(date, temperature, humidity, pressure, wind);
+        if (wind >= 15)
+        {
+            throw new IllegalArgumentException("Для звичайного вимірювання вітер має бути меншим за 15 м/с");
+        }
     }
     /**
      * Повертає навчальний індекс небезпеки.
      * @return індекс без фізичної одиниці виміру
      */
     @Override
-    public double dangerIndex() {
+    public double dangerIndex()
+    {
         return getWind();
     }
     /**
@@ -32,7 +33,8 @@ public final class DailyReading extends WeatherReading
      * @return категорія цього підтипу
      */
     @Override
-    public WeatherKind getKind() {
+    public WeatherKind getKind()
+    {
         return WeatherKind.DAILY;
     }
 }

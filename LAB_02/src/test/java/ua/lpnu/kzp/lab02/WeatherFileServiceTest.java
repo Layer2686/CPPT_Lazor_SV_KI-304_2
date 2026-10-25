@@ -12,12 +12,14 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class WeatherFileServiceTest {
+class WeatherFileServiceTest
+{
     @TempDir
     Path tempDir;
 
     @Test
-    void readsAndWritesUtf8WithAutomaticParentDirectories() throws IOException {
+    void readsAndWritesUtf8WithAutomaticParentDirectories() throws IOException
+    {
         WeatherFileService files = new WeatherFileService();
         Path output = tempDir.resolve("звіти/погода.txt");
         String text = "Мінімальна температура: -5.50 °C\nВологість: 70.00 %\n";
@@ -30,7 +32,8 @@ class WeatherFileServiceTest {
     }
 
     @Test
-    void replacesExistingContentsInsteadOfAppending() throws IOException {
+    void replacesExistingContentsInsteadOfAppending() throws IOException
+    {
         WeatherFileService files = new WeatherFileService();
         Path output = tempDir.resolve("report.txt");
         files.write(output, "Попередній довгий звіт");
@@ -41,7 +44,8 @@ class WeatherFileServiceTest {
     }
 
     @Test
-    void propagatesReadAndWriteFailuresToController() throws IOException {
+    void propagatesReadAndWriteFailuresToController() throws IOException
+    {
         WeatherFileService files = new WeatherFileService();
         Path blocked = tempDir.resolve("blocked");
         Files.writeString(blocked, "це файл", StandardCharsets.UTF_8);

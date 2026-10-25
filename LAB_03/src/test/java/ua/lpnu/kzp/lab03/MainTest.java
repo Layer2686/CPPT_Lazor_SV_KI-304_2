@@ -23,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ResourceLock(Resources.SYSTEM_OUT)
 @ResourceLock(Resources.SYSTEM_ERR)
 @ResourceLock(Resources.LOCALE)
-class MainTest {
+class MainTest
+{
     @TempDir
     Path tempDir; // JUnit створює й прибирає окрему тимчасову папку для кожного тесту.
 
@@ -31,7 +32,77 @@ class MainTest {
     String errorText;
 
     @Test
-    void calculatesFourStatistics() throws IOException {
+    void dangerAddsConsoleAnalysisWithoutChangingTheOutputFile() throws IOException
+    {
+        Path input = tempDir.resolve("danger.csv");
+        Path output = tempDir.resolve("out/report.txt");
+        Files.writeString(input,
+                "2026-09-01;10;70;1013;7.5\n"
+                + "2026-09-02;10;70;1013;20\n"
+                + "2026-09-03;10;70;1013;-1\n", StandardCharsets.UTF_8);
+        runMain("--input", input.toString(), "--output", output.toString());
+        String standardConsole = consoleText;
+        String standardFile = Files.readString(output, StandardCharsets.UTF_8);
+        assertEquals("", errorText);
+
+        runMain("--danger", "--input", input.toString(), "--output", output.toString());
+
+        String analysis = String.format(Locale.ROOT,
+                "Додатковий аналіз небезпеки:%n"
+                + "2026-09-01: Звичайне вимірювання, індекс 7.50%n"
+                + "2026-09-02: Штормове вимірювання, індекс 40.00%n"
+                + "Максимальний індекс небезпеки: 40.00%n");
+        assertEquals(standardConsole + analysis, consoleText);
+        assertEquals(standardFile, Files.readString(output, StandardCharsets.UTF_8));
+        assertFalse(standardFile.contains("індекс"));
+        assertEquals("", errorText);
+    }
+
+    @Test
+    void dangerHandlesEmptyAndFullyInvalidInputWithoutAnInventedMaximum() throws IOException
+    {
+        Path input = tempDir.resolve("empty.csv");
+        Path output = tempDir.resolve("report.txt");
+        Files.writeString(input, "", StandardCharsets.UTF_8);
+        runMain("--input", input.toString(), "--output", output.toString(), "--danger");
+        assertTrue(consoleText.endsWith("Немає даних для аналізу небезпеки" + System.lineSeparator()));
+        assertFalse(consoleText.contains("Максимальний індекс"));
+        assertFalse(Files.readString(output, StandardCharsets.UTF_8).contains("небезпеки"));
+        assertEquals("", errorText);
+
+        Files.writeString(input, "2026-09-01;10;70;1013;-1\n", StandardCharsets.UTF_8);
+        runMain("--input", input.toString(), "--danger", "--output", output.toString());
+        assertTrue(consoleText.contains("Кількість коректних записів: 0"));
+        assertTrue(consoleText.contains("Рядок 1: вітер"));
+        assertTrue(consoleText.endsWith("Немає даних для аналізу небезпеки" + System.lineSeparator()));
+        assertFalse(consoleText.contains("Максимальний індекс"));
+        assertEquals("", errorText);
+    }
+
+    @Test
+    void dangerUsesDecimalPointsEvenWithGermanLocale() throws IOException
+    {
+        Locale previous = Locale.getDefault(Locale.Category.FORMAT);
+        try
+        {
+            Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
+            Path input = tempDir.resolve("danger.csv");
+            Path output = tempDir.resolve("report.txt");
+            Files.writeString(input, "2026-09-01;10;70;1013;20\n", StandardCharsets.UTF_8);
+            runMain("--input", input.toString(), "--output", output.toString(), "--danger");
+            assertTrue(consoleText.contains("індекс 40.00"));
+            assertTrue(consoleText.contains("Максимальний індекс небезпеки: 40.00"));
+            assertEquals("", errorText);
+        }
+        finally
+        {
+            Locale.setDefault(Locale.Category.FORMAT, previous);
+        }
+    }
+
+    @Test
+    void calculatesFourStatistics() throws IOException
+    {
         String report = runCsv(
                 "2026-10-01;4;10;1000;1\n"
                 + "2026-10-02;-3.25;20;1000;5.5\n"
@@ -50,7 +121,8 @@ class MainTest {
     }
 
     @Test
-    void acceptsSpacesAndBoundaryValues() throws IOException {
+    void acceptsSpacesAndBoundaryValues() throws IOException
+    {
         String report = runCsv(
                 " 2026-10-01 ; -2.75 ; 0 ; 0.01 ; 0 \n"
                 + "2026-10-02;4;100;1000;3\n");
@@ -63,16 +135,17 @@ class MainTest {
     }
 
     @Test
-    void rejectsWrongStructureAndEmptyFields() throws IOException {
+    void rejectsWrongStructureAndEmptyFields() throws IOException
+    {
         String report = runCsv(
-                "\n"                                    // 1: порожній рядок
-                + "2026-10-02;1;50;1000\n"               // 2: лише чотири поля
-                + "2026-10-03;1;50;1000;2;extra\n"       // 3: зайве поле
-                + "2026-10-04;1;50;1000;\n"             // 4: порожній вітер
-                + ";1;50;1000;2\n"                      // 5: порожня дата
-                + "2026/10/06;1;50;1000;2\n"            // 6: неправильний формат дати
-                + "2026-10-07;1;;1000;2\n"              // 7: порожня вологість
-                + "2026-10-08;1;50;1000;2\n");          // 8: коректний запис після помилок
+                "\n"                               // 1: порожній рядок
+                + "2026-10-02;1;50;1000\n"         // 2: лише чотири поля
+                + "2026-10-03;1;50;1000;2;extra\n" // 3: зайве поле
+                + "2026-10-04;1;50;1000;\n"        // 4: порожній вітер
+                + ";1;50;1000;2\n"                 // 5: порожня дата
+                + "2026/10/06;1;50;1000;2\n"       // 6: неправильний формат дати
+                + "2026-10-07;1;;1000;2\n"         // 7: порожня вологість
+                + "2026-10-08;1;50;1000;2\n");     // 8: коректний запис після помилок
 
         assertTrue(report.contains("Кількість коректних записів: 1"));
         assertTrue(report.contains("Рядок 1: очікується 5 полів"));
@@ -85,7 +158,8 @@ class MainTest {
     }
 
     @Test
-    void rejectsWrongNumbersAndNonFiniteValues() throws IOException {
+    void rejectsWrongNumbersAndNonFiniteValues() throws IOException
+    {
         String report = runCsv(
                 "2026-10-01;помилка;50;1000;2\n"
                 + "2026-10-02;1;помилка;1000;2\n"
@@ -109,15 +183,16 @@ class MainTest {
     }
 
     @Test
-    void invalidRecordsDoNotChangeStatistics() throws IOException {
+    void invalidRecordsDoNotChangeStatistics() throws IOException
+    {
         String report = runCsv(
-                "2026-10-01;4;25;1000;1\n"             // Коректний.
-                + "2026-10-02;-999;-1;1000;999\n"       // Вологість нижче 0.
-                + "2026-10-03;-999;101;1000;999\n"      // Вологість вище 100.
-                + "2026-10-04;-999;100;1000;-1\n"       // Від'ємний вітер.
-                + "2026-10-05;-999;100;0;999\n"         // Нульовий тиск.
-                + "2026-10-06;-999;100;-1;999\n"        // Від'ємний тиск.
-                + "2026-10-07;2;75;1000;3\n");         // Коректний після помилок.
+                "2026-10-01;4;25;1000;1\n"         // Коректний.
+                + "2026-10-02;-999;-1;1000;999\n"  // Вологість нижче 0.
+                + "2026-10-03;-999;101;1000;999\n" // Вологість вище 100.
+                + "2026-10-04;-999;100;1000;-1\n"  // Від'ємний вітер.
+                + "2026-10-05;-999;100;0;999\n"    // Нульовий тиск.
+                + "2026-10-06;-999;100;-1;999\n"   // Від'ємний тиск.
+                + "2026-10-07;2;75;1000;3\n");     // Коректний після помилок.
 
         assertTrue(report.contains("Кількість коректних записів: 2"));
         assertTrue(report.contains("Мінімальна температура: 2.00 °C"));
@@ -131,7 +206,8 @@ class MainTest {
     }
 
     @Test
-    void emptyFileHasNoData() throws IOException {
+    void emptyFileHasNoData() throws IOException
+    {
         String report = runCsv("");
         assertTrue(report.contains("Кількість коректних записів: 0"));
         assertTrue(report.contains("Немає даних"));
@@ -142,25 +218,28 @@ class MainTest {
     }
 
     @Test
-    void helpAndVersionDoNotReadInput() throws IOException {
+    void helpAndVersionDoNotReadInput() throws IOException
+    {
         runMain("--help");
         assertTrue(consoleText.contains("--input"));
         assertTrue(consoleText.contains("--output"));
+        assertTrue(consoleText.contains("--danger"));
         assertFalse(consoleText.contains("Кількість коректних записів:"));
         assertEquals("", errorText);
 
         Properties buildInfo = new Properties();
-        try (InputStream input = Main.class.getResourceAsStream("/build-info.properties")) {
+        try (InputStream input = Main.class.getResourceAsStream("/build-info.properties"))
+        {
             buildInfo.load(input);
         }
         runMain("--version");
-        assertEquals("lab03 " + buildInfo.getProperty("app.version") + " (build "
-                + buildInfo.getProperty("build.number") + ")" + System.lineSeparator(), consoleText);
+        assertEquals("lab03 " + buildInfo.getProperty("app.version") + " (build " + buildInfo.getProperty("build.number") + ")" + System.lineSeparator(), consoleText);
         assertEquals("", errorText);
     }
 
     @Test
-    void invalidArgumentsAreExplained() {
+    void invalidArgumentsAreExplained()
+    {
         runMain("--unknown");
         assertTrue(errorText.contains("Невідомий параметр: --unknown"));
         assertEquals("", consoleText);
@@ -173,7 +252,8 @@ class MainTest {
     }
 
     @Test
-    void ukrainianPathsAndReversedOptionsWork() throws IOException {
+    void ukrainianPathsAndReversedOptionsWork() throws IOException
+    {
         Path input = tempDir.resolve("вимірювання.csv");
         Path output = tempDir.resolve("звіти/погода.txt");
         Files.writeString(input, "2026-10-01;1;помилка;1000;2\n", StandardCharsets.UTF_8);
@@ -186,7 +266,8 @@ class MainTest {
     }
 
     @Test
-    void missingInputIsExplained() {
+    void missingInputIsExplained()
+    {
         Path missing = tempDir.resolve("missing.csv");
         Path output = tempDir.resolve("report.txt");
         runMain("--input", missing.toString(), "--output", output.toString());
@@ -196,7 +277,8 @@ class MainTest {
     }
 
     @Test
-    void writeFailureIsExplained() throws IOException {
+    void writeFailureIsExplained() throws IOException
+    {
         Path input = tempDir.resolve("input.csv");
         Path blocked = tempDir.resolve("blocked");
         Files.writeString(input, "2026-10-01;1;50;1000;2\n", StandardCharsets.UTF_8);
@@ -208,21 +290,26 @@ class MainTest {
     }
 
     @Test
-    void germanLocaleStillUsesDecimalPoint() throws IOException {
+    void germanLocaleStillUsesDecimalPoint() throws IOException
+    {
         Locale previous = Locale.getDefault(Locale.Category.FORMAT);
-        try {
+        try
+        {
             Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
             String report = runCsv("2026-10-01;-2.5;12.5;1000;1.5\n");
             assertTrue(report.contains("Мінімальна температура: -2.50 °C"));
             assertTrue(report.contains("Середній рівень вологості: 12.50 %"));
             assertTrue(report.contains("Максимальна швидкість вітру: 1.50 м/с"));
-        } finally {
+        }
+        finally
+        {
             Locale.setDefault(Locale.Category.FORMAT, previous);
         }
     }
 
     // Готує CSV, запускає програму й повертає звіт. Файли живуть лише в tempDir.
-    private String runCsv(String csv) throws IOException {
+    private String runCsv(String csv) throws IOException
+    {
         Path input = tempDir.resolve("input.csv");
         Path output = tempDir.resolve("out/report.txt");
         Files.writeString(input, csv, StandardCharsets.UTF_8);
@@ -234,18 +321,23 @@ class MainTest {
     }
 
     // Перенаправляє stdout/stderr у пам'ять, щоб тести могли перевірити надрукований текст.
-    private void runMain(String... args) {
+    private void runMain(String... args)
+    {
         PrintStream originalOut = System.out;
         PrintStream originalErr = System.err;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ByteArrayOutputStream errors = new ByteArrayOutputStream();
         try (PrintStream capturedOut = new PrintStream(output, true, StandardCharsets.UTF_8);
-             PrintStream capturedErr = new PrintStream(errors, true, StandardCharsets.UTF_8)) {
-            try {
+                PrintStream capturedErr = new PrintStream(errors, true, StandardCharsets.UTF_8))
+        {
+            try
+            {
                 System.setOut(capturedOut);
                 System.setErr(capturedErr);
                 Main.main(args);
-            } finally {
+            }
+            finally
+            {
                 System.setOut(originalOut);
                 System.setErr(originalErr);
             }

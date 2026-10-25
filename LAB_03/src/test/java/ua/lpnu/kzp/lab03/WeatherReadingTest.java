@@ -11,9 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Прямі перевірки нової моделі без читання файлів і перехоплення консолі. */
 @ResourceLock(Resources.LOCALE)
-class WeatherReadingTest {
+class WeatherReadingTest
+{
     @Test
-    void constructorStoresAllFields() {
+    void constructorStoresAllFields()
+    {
         WeatherReading reading = new DailyReading("2026-09-01", -5.5, 70, 1013, 3.2);
 
         assertEquals("2026-09-01", reading.getDate());
@@ -25,7 +27,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void constructorRejectsMissingOrMalformedDate() {
+    void constructorRejectsMissingOrMalformedDate()
+    {
         assertThrows(IllegalArgumentException.class,
                 () -> new DailyReading(null, 1, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
@@ -35,7 +38,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void constructorRejectsValuesOutsideDomain() {
+    void constructorRejectsValuesOutsideDomain()
+    {
         assertThrows(IllegalArgumentException.class,
                 () -> new DailyReading("2026-09-01", 1, -1, 1000, 2));
         assertThrows(IllegalArgumentException.class,
@@ -49,7 +53,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void constructorRejectsNonFiniteNumbers() {
+    void constructorRejectsNonFiniteNumbers()
+    {
         assertThrows(IllegalArgumentException.class,
                 () -> new DailyReading("2026-09-01", Double.NaN, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
@@ -69,7 +74,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void acceptsBoundaryValuesAndNegativeTemperature() {
+    void acceptsBoundaryValuesAndNegativeTemperature()
+    {
         WeatherReading dry = new DailyReading("2026-09-01", -20, 0, 0.01, 0);
         WeatherReading humid = new DailyReading("2026-09-02", 0, 100, 1000, 0);
 
@@ -80,7 +86,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void fromCsvConvertsFieldsAndTrimsSpaces() {
+    void fromCsvConvertsFieldsAndTrimsSpaces()
+    {
         WeatherReading reading = WeatherReading.fromCsv(" 2026-09-01 ; -5.5 ; 70 ; 1013 ; 3.2 ");
 
         assertEquals("2026-09-01", reading.getDate());
@@ -91,7 +98,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void fromCsvRejectsNullWrongStructureAndWrongNumbers() {
+    void fromCsvRejectsNullWrongStructureAndWrongNumbers()
+    {
         assertThrows(IllegalArgumentException.class, () -> WeatherReading.fromCsv(null));
         assertThrows(IllegalArgumentException.class, () -> WeatherReading.fromCsv(""));
         assertThrows(IllegalArgumentException.class,
@@ -106,7 +114,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void fromCsvPreservesFirstLegacyErrorForSeveralWrongFields() {
+    void fromCsvPreservesFirstLegacyErrorForSeveralWrongFields()
+    {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> WeatherReading.fromCsv("bad-date;помилка;101;0;-1"));
 
@@ -116,7 +125,8 @@ class WeatherReadingTest {
     }
 
     @Test
-    void recordHasValueEqualityAndComponentAccessors() {
+    void recordHasValueEqualityAndComponentAccessors()
+    {
         TemperatureHumidity first = new TemperatureHumidity(-5.5, 70);
         TemperatureHumidity second = new TemperatureHumidity(-5.5, 70);
 
@@ -130,23 +140,32 @@ class WeatherReadingTest {
     }
 
     @Test
-    void toStringUsesTwoDecimalsEvenWithGermanLocale() {
+    void toStringUsesTwoDecimalsEvenWithGermanLocale()
+    {
         Locale previous = Locale.getDefault(Locale.Category.FORMAT);
-        try {
+        try
+        {
             Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
             WeatherReading reading = new DailyReading("2026-09-01", -5.5, 70, 1013, 3.2);
 
             assertEquals("2026-09-01: -5.50 °C, 70.00 %, 1013.00 гПа, 3.20 м/с",
                     reading.toString());
-        } finally {
+        }
+        finally
+        {
             Locale.setDefault(Locale.Category.FORMAT, previous);
         }
     }
 
     @Test
-    void builderCreatesIndependentImmutableReadings() {
+    void builderCreatesIndependentImmutableReadings()
+    {
         WeatherReading.Builder builder = WeatherReading.builder()
-                .date("2026-09-01").temperature(-5.5).humidity(70).pressure(1013).wind(3.2);
+                                                 .date("2026-09-01")
+                                                 .temperature(-5.5)
+                                                 .humidity(70)
+                                                 .pressure(1013)
+                                                 .wind(3.2);
         WeatherReading first = builder.build();
         WeatherReading second = builder.humidity(80).build();
 
@@ -156,16 +175,14 @@ class WeatherReadingTest {
     }
 
     @Test
-    void builderCannotBypassConstructorValidation() {
+    void builderCannotBypassConstructorValidation()
+    {
         assertThrows(IllegalArgumentException.class, () -> WeatherReading.builder().build());
         assertThrows(IllegalArgumentException.class,
-                () -> WeatherReading.builder().date("2026-09-01")
-                        .temperature(1).humidity(101).pressure(1000).wind(2).build());
+                () -> WeatherReading.builder().date("2026-09-01").temperature(1).humidity(101).pressure(1000).wind(2).build());
         assertThrows(IllegalArgumentException.class,
-                () -> WeatherReading.builder().date("2026-09-01")
-                        .temperature(1).humidity(50).pressure(1000).build());
+                () -> WeatherReading.builder().date("2026-09-01").temperature(1).humidity(50).pressure(1000).build());
         assertThrows(IllegalArgumentException.class,
-                () -> WeatherReading.builder().temperature(1)
-                        .humidity(50).pressure(1000).wind(2).build());
+                () -> WeatherReading.builder().temperature(1).humidity(50).pressure(1000).wind(2).build());
     }
 }

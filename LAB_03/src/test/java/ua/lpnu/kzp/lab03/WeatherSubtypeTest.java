@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Перевірки двох підтипів та вибору категорії на межі 15 м/с. */
-class WeatherSubtypeTest {
+class WeatherSubtypeTest
+{
     @Test
-    void subtypesProvideDifferentKindsAndDangerIndexesThroughBaseType() {
+    void subtypesProvideDifferentKindsAndDangerIndexesThroughBaseType()
+    {
         WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading storm = new StormReading("2026-09-02", 10, 70, 1013, 20);
 
@@ -20,7 +22,8 @@ class WeatherSubtypeTest {
     }
 
     @Test
-    void constructorsEnforceTheirOwnWindRanges() {
+    void constructorsEnforceTheirOwnWindRanges()
+    {
         WeatherReading calm = new DailyReading("2026-09-01", 10, 70, 1013, 0);
         WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 14.99);
         WeatherReading storm = new StormReading("2026-09-01", 10, 70, 1013, 15);
@@ -35,7 +38,8 @@ class WeatherSubtypeTest {
     }
 
     @Test
-    void stormConstructorAlsoRejectsInvalidCommonState() {
+    void stormConstructorAlsoRejectsInvalidCommonState()
+    {
         assertThrows(IllegalArgumentException.class,
                 () -> new StormReading(null, 10, 70, 1013, 20));
         assertThrows(IllegalArgumentException.class,
@@ -51,7 +55,8 @@ class WeatherSubtypeTest {
     }
 
     @Test
-    void csvFactorySelectsSubtypeAtThresholdAndPreservesFields() {
+    void csvFactorySelectsSubtypeAtThresholdAndPreservesFields()
+    {
         WeatherReading daily = WeatherReading.fromCsv("2026-09-01;10;70;1013;14.99");
         WeatherReading storm = WeatherReading.fromCsv(" 2026-09-02 ; -5.5 ; 80 ; 1008 ; 15 ");
 
@@ -65,9 +70,14 @@ class WeatherSubtypeTest {
     }
 
     @Test
-    void builderSelectsSubtypeWithoutChangingPreviousReading() {
+    void builderSelectsSubtypeWithoutChangingPreviousReading()
+    {
         WeatherReading.Builder builder = WeatherReading.builder()
-                .date("2026-09-01").temperature(10).humidity(70).pressure(1013).wind(14.99);
+                                                 .date("2026-09-01")
+                                                 .temperature(10)
+                                                 .humidity(70)
+                                                 .pressure(1013)
+                                                 .wind(14.99);
         WeatherReading daily = builder.build();
         WeatherReading storm = builder.wind(15).build();
 

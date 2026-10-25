@@ -53,6 +53,10 @@ foreach ($name in @('lab01', 'lab02', 'lab03')) {
     }
     Write-Output "Help check passed: $name"
 
+    if ($name -eq 'lab03' -and $help -cnotcontains '--danger        показати додатковий аналіз небезпеки') {
+        throw 'LAB_03 help does not describe --danger'
+    }
+
     # Файл без батьківського каталогу перевіряється з тимчасової робочої папки.
     $testDirectory = Join-Path $env:RUNNER_TEMP "$name-report"
     New-Item -ItemType Directory -Path $testDirectory -Force | Out-Null
@@ -92,3 +96,36 @@ foreach ($name in @('lab02', 'lab03')) {
     }
 }
 Write-Output 'Compatibility check passed: LAB_01, LAB_02 and LAB_03 console/file reports are identical.'
+
+# Новий режим перевіряється окремо; старі лабораторні не мають цього ключа.
+$dangerJar = (Resolve-Path -LiteralPath 'LAB_03/target/lab03.jar').Path
+$dangerInput = (Resolve-Path -LiteralPath 'LAB_03/data/danger-example.csv').Path
+$plainFile = Join-Path $env:RUNNER_TEMP 'lab03-danger/plain.txt'
+$dangerFile = Join-Path $env:RUNNER_TEMP 'lab03-danger/danger.txt'
+$plainOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --input $dangerInput --output $plainFile)
+if ($LASTEXITCODE -ne 0) {
+    throw 'LAB_03 baseline command for danger fixture failed'
+}
+$dangerOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --danger --input $dangerInput --output $dangerFile)
+if ($LASTEXITCODE -ne 0) {
+    throw 'LAB_03 --danger command failed'
+}
+$dangerLines = @(
+    'Додатковий аналіз небезпеки:'
+    '2026-09-01: Звичайне вимірювання, індекс 7.50'
+    '2026-09-02: Штормове вимірювання, індекс 40.00'
+    'Максимальний індекс небезпеки: 40.00'
+)
+foreach ($line in $dangerLines) {
+    if ($dangerOutput -cnotcontains $line) {
+        throw "LAB_03 danger analysis line is missing: $line"
+    }
+}
+$plainText = ($plainOutput -join [Environment]::NewLine) + [Environment]::NewLine
+$dangerText = ($dangerOutput -join [Environment]::NewLine) + [Environment]::NewLine
+$plainReport = Get-Content -LiteralPath $plainFile -Raw -Encoding utf8
+$dangerReport = Get-Content -LiteralPath $dangerFile -Raw -Encoding utf8
+if (-not $dangerText.StartsWith($plainText) -or $plainReport -cne $dangerReport -or $dangerReport.Contains('індекс')) {
+    throw 'LAB_03 --danger changed the standard console/file report'
+}
+Write-Output 'Danger CLI check passed: extra console analysis; standard UTF-8 file unchanged.'
