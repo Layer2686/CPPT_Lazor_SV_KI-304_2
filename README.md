@@ -6,8 +6,10 @@
 | --- | --- | --- | --- |
 | [LAB_01](LAB_01) | Обробка CSV через рядки та змінні | 1.0.0 | [Звіт №1](REPORT.md) |
 | [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
+| [LAB_03](LAB_03) | У підготовці: окрема робоча копія LAB_02 для майбутньої ієрархії | 1.2.0-SNAPSHOT | [Запуск №3](LAB_03/README.md), [план №3](LAB_03/PLAN.md) |
 
-`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє обидві роботи.
+`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі три модулі.
+Окрема перевірка третьої роботи: `./mvnw -B -pl LAB_03 -am verify`.
 Команди запуску нижче демонструють LAB_01; окремі команди LAB_02 — за посиланням у таблиці.
 Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 

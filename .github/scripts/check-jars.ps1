@@ -8,8 +8,8 @@ $ErrorActionPreference = 'Stop'
 $reports = @{}
 $consoles = @{}
 
-foreach ($name in @('lab01', 'lab02')) {
-    $module = if ($name -eq 'lab01') { 'LAB_01' } else { 'LAB_02' }
+foreach ($name in @('lab01', 'lab02', 'lab03')) {
+    $module = $name.ToUpperInvariant().Replace('LAB', 'LAB_')
     $jarPath = (Resolve-Path -LiteralPath "$module/target/$name.jar").Path
     $inputPath = (Resolve-Path -LiteralPath "$module/data/input.csv").Path
 
@@ -29,9 +29,9 @@ foreach ($name in @('lab01', 'lab02')) {
     }
     Write-Output "Version check passed: $expectedVersion"
 
-    if ($name -eq 'lab02' -and $env:GITHUB_REF_TYPE -eq 'tag') {
+    if ($name -eq 'lab03' -and $env:GITHUB_REF_TYPE -eq 'tag') {
         if ($env:GITHUB_REF_NAME -cne "v$version") {
-            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_02 version '$version'"
+            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_03 version '$version'"
         }
     }
 
@@ -86,7 +86,9 @@ foreach ($name in @('lab01', 'lab02')) {
     Write-Output "JAR check passed: $name; UTF-8 report.txt without a parent directory."
 }
 
-if ($reports['lab01'] -cne $reports['lab02'] -or $consoles['lab01'] -cne $consoles['lab02']) {
-    throw 'LAB_01 and LAB_02 produce different results for the reference CSV'
+foreach ($name in @('lab02', 'lab03')) {
+    if ($reports['lab01'] -cne $reports[$name] -or $consoles['lab01'] -cne $consoles[$name]) {
+        throw "LAB_01 and $name produce different results for the reference CSV"
+    }
 }
-Write-Output 'Compatibility check passed: LAB_01 and LAB_02 console/file reports are identical.'
+Write-Output 'Compatibility check passed: LAB_01, LAB_02 and LAB_03 console/file reports are identical.'

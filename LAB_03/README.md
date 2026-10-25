@@ -1,0 +1,106 @@
+# Лабораторна №3 — спадкування та поліморфізм
+
+Варіант 18 — метеостанція. Робоча гілка — `lab03`.
+
+**Поточний стан: підготовча копія LAB_02, не завершена лабораторна №3.**
+Нові підтипи, enum, індекс небезпеки, equals/hashCode та sealed ще потрібно
+реалізувати за [планом](PLAN.md). Окремий модуль уже дозволяє збирати,
+тестувати й запускати третю роботу без зміни перших двох.
+
+Потрібні Git та JDK 21. Maven 3.9.9 завантажує спільний Wrapper;
+встановлення середовища описано в [кореневому README](../README.md).
+Усі команди нижче виконуються **з кореня репозиторію**.
+
+## Збірка та перевірка
+
+Linux / macOS:
+
+```sh
+./mvnw -B -pl LAB_03 -am verify
+```
+
+Windows PowerShell:
+
+```powershell
+.\mvnw.cmd -B -pl LAB_03 -am verify
+```
+
+`-pl LAB_03` вибирає третю роботу, `-am` додає потрібні проєкти реактора.
+`verify` включає компіляцію, JUnit, виконуваний JAR та SpotBugs.
+Для всіх трьох робіт: `./mvnw -B verify` або `.\mvnw.cmd -B verify`.
+`clean` за потреби додається перед `verify` й видаляє попередній `target`.
+
+## Запуск, версія та довідка
+
+```sh
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_03/target/lab03.jar --input LAB_03/data/input.csv --output LAB_03/out/report.txt
+java -jar LAB_03/target/lab03.jar --version
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_03/target/lab03.jar --help
+```
+
+У PowerShell перед українським консольним виводом:
+
+```powershell
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+```
+
+Підготовча версія: `lab03 1.2.0-SNAPSHOT (build local)`.
+У CI замість `local` — номер запуску. Фінальний тег не створюється,
+доки нова модель, тести й документація не будуть завершені.
+Папки звіту створюються автоматично. Без параметрів типові шляхи
+`data/input.csv` та `out/report.txt` відраховуються від робочого каталогу;
+такий запуск потрібно виконувати з `LAB_03`.
+
+## Дані й сумісність
+
+[data/input.csv](data/input.csv) — незмінний контрольний файл з LAB_02.
+UTF-8, без заголовка, п’ять полів:
+
+```text
+дата;температура;вологість;тиск;вітер
+```
+
+Це опис полів, не рядок для додавання в CSV. Дата має формат YYYY-MM-DD
+без календарної перевірки; температура скінченна, вологість 0–100 %,
+тиск додатний скінченний у гПа, вітер скінченний невід’ємний у м/с.
+
+Контрольний результат: 3 коректні записи, мінімальна температура −5.50 °C,
+середня вологість 70.00 %, максимальний вітер 7.50 м/с і дві помилки.
+Підсумок та помилки є і в консолі, і у файлі; докладні коректні записи —
+лише в консолі. Новий індекс небезпеки не має змінити стандартний звіт.
+
+## Що вже перенесено
+
+- Пакет `ua.lpnu.kzp.lab03` зі структурою Main → парсер → контролер.
+- WeatherReading, TemperatureHumidity, фабрика, Builder і звіт із LAB_02.
+- 33 попередні JUnit-тести без зміни перевірок, крім назви пакета/програми.
+- POM зі старими версіями плагінів, UTF-8 та Main-Class нового пакета.
+- CI трьох ОС, порівняння результатів трьох JAR, Javadoc і артефакти.
+
+У підготовчій версії WeatherReading ще `final`. Перехід до абстрактної бази,
+DailyReading, StormReading та WeatherKind — наступний навчальний етап.
+Звичайний `new WeatherReading(...)` і Builder потрібно буде адаптувати
+разом зі зміною класу, щоб не зламати компіляцію.
+
+## Javadoc
+
+Linux / macOS:
+
+```sh
+javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_03/target/apidocs LAB_03/src/main/java/ua/lpnu/kzp/lab03/*.java
+```
+
+Windows PowerShell:
+
+```powershell
+$sources = @(Get-ChildItem LAB_03/src/main/java -Recurse -Filter '*.java' | ForEach-Object { $_.FullName })
+javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_03/target/apidocs @sources
+```
+
+Відкрити `LAB_03/target/apidocs/index.html`. Згенеровані сторінки не комітяться.
+
+[План та Issues](PLAN.md) · [Чернетка звіту](REPORT.md).
+
+Проміжні коміти публікуються лише в `lab03`. PR у `main` і merge — після
+завершення лабораторної та погодження користувача. Старі модулі й звіти
+залишаються окремими навчальними зрізами.
