@@ -7,9 +7,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 /** Читає CSV і записує звіт у UTF-8; передає помилки вводу/виводу контролеру. */
-public final class WeatherFileService {
+public final class WeatherFileService
+{
     /** Створює сервіс роботи з файлами. */
-    public WeatherFileService() {
+    public WeatherFileService()
+    {
     }
 
     /**
@@ -19,7 +21,8 @@ public final class WeatherFileService {
      * @return рядки файла
      * @throws IOException якщо файл неможливо прочитати або декодувати
      */
-    public List<String> read(Path inputPath) throws IOException {
+    public List<String> read(Path inputPath) throws IOException
+    {
         return Files.readAllLines(inputPath, StandardCharsets.UTF_8);
     }
 
@@ -31,9 +34,11 @@ public final class WeatherFileService {
      * @param reportText готовий текст
      * @throws IOException якщо створення папок або запис неможливий
      */
-    public void write(Path outputPath, String reportText) throws IOException {
+    public void write(Path outputPath, String reportText) throws IOException
+    {
         Path directory = outputPath.getParent();
-        if (directory != null) {
+        if (directory != null)
+        {
             Files.createDirectories(directory);
         }
         Files.writeString(outputPath, reportText, StandardCharsets.UTF_8);
