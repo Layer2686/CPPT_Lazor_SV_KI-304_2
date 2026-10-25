@@ -12,6 +12,7 @@
 Окрема перевірка третьої роботи: `./mvnw -B -pl LAB_03 -am verify`.
 Команди нижче демонструють LAB_01; окремі команди LAB_02 та LAB_03 — у таблиці.
 Для аналізу індексів у LAB_03 використовуйте прапорець `--danger`.
+Фінальна версія №3: [v1.2.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.2.0), [CI трьох ОС та артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40239715250).
 Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 
 Консольна програма на Java читає вимірювання метеостанції з CSV-файла,

@@ -8,6 +8,9 @@
 спільний Wrapper. Встановлення середовища — у [кореневому README](../README.md).
 Усі команди нижче виконуються **з кореня репозиторію**.
 
+Реліз: [v1.2.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.2.0) · [CI трьох ОС та JAR-артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40239715250) ·
+[PR #50](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/50). Докладні результати — у [звіті](REPORT.md).
+
 ## Збірка
 
 Linux/macOS:
