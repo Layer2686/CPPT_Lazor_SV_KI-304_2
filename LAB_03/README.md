@@ -4,7 +4,8 @@
 
 **Поточний стан: модель і поліморфний аналіз реалізовані, робота ще не завершена.**
 Готові підтипи, enum, індекс небезпеки, sealed-база та equals/hashCode.
-Залишилися pattern switch і фінальні перевірки за [планом](PLAN.md).
+Pattern switch також реалізований; залишилися фінальні перевірки й оформлення
+за [планом](PLAN.md).
 Окремий модуль дозволяє збирати,
 тестувати й запускати третю роботу без зміни перших двох.
 
@@ -100,7 +101,8 @@ WeatherReport.maxDangerIndex обробляє List<WeatherReading> через da
 та WeatherReportTest. Вони перевіряють підтипи, категорії, межу 15 м/с,
 негативні випадки, фабрику, Builder та поліморфний максимум. Ще 6 перевірок
 у WeatherEqualityTest охоплюють equals/hashCode, HashSet і збереження дублікатів
-у звичайній статистиці. Разом у LAB_03 — 48 тестових методів.
+у звичайній статистиці. Тест describesBothPermittedSubtypes додатково перевіряє
+обидві гілки pattern switch. Разом у LAB_03 — 49 тестових методів.
 
 Рівність визначається конкретним класом і всіма полями: date,
 temperatureHumidity, pressure, wind. HashSet прибирає логічні дублікати
@@ -112,6 +114,37 @@ temperatureHumidity, pressure, wind. HashSet прибирає логічні д�
 аналізу sealed-класів; правила не вимикаються. База вже abstract;
 createReading вибирає конкретний підтип для fromCsv і Builder.build.
 Попередні прямі тести конструктора використовують DailyReading.
+
+## Перевірка sealed та pattern switch
+
+WeatherReading дозволяє лише DailyReading і StormReading. Обидва підтипи
+final, база abstract, тому describeReading може перелічити всі варіанти
+без default. Метод повертає тільки підпис, не дублює dangerIndex і не
+додає рядків до стандартного звіту.
+
+Окремий автоматичний тест із кореня репозиторію:
+
+```sh
+./mvnw -B -pl LAB_03 -Dtest=WeatherReportTest#describesBothPermittedSubtypes test
+```
+
+На Windows замість `./mvnw` — `.\mvnw.cmd`. Очікується один успішний тест.
+Ручна перевірка після збірки: запустити `jshell --class-path LAB_03/target/classes`
+і в його консолі виконати:
+
+```java
+import ua.lpnu.kzp.lab03.*;
+WeatherReading daily = WeatherReading.fromCsv("2026-09-01;10;70;1013;7.5");
+WeatherReading storm = WeatherReading.fromCsv("2026-09-02;10;70;1013;20");
+System.out.println(WeatherReport.describeReading(daily));
+System.out.println(WeatherReport.describeReading(storm));
+```
+
+Результат двох println: «Звичайне вимірювання» та «Штормове вимірювання».
+Для виходу з JShell — `/exit`. Окремий тимчасовий приклад без гілки
+StormReading перевірено javac --release 21: компілятор відмовляє, бо switch
+не покриває всі значення. Обидві гілки без default компілюються без preview.
+Непрацездатний приклад не зберігається в основних джерелах.
 
 ## Javadoc
 

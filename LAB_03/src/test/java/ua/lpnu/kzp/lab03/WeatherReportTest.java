@@ -10,6 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** Прямі перевірки поліморфного аналізу та сумісного тексту звіту. */
 class WeatherReportTest {
     @Test
+    void describesBothPermittedSubtypes() {
+        WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
+        WeatherReading storm = new StormReading("2026-09-02", 10, 70, 1013, 20);
+
+        assertEquals("Звичайне вимірювання", WeatherReport.describeReading(daily));
+        assertEquals("Штормове вимірювання", WeatherReport.describeReading(storm));
+    }
+
+    @Test
     void findsMaximumDangerIndexRegardlessOfRecordOrder() {
         WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 7.5);
         WeatherReading storm = new StormReading("2026-09-02", 10, 70, 1013, 20);

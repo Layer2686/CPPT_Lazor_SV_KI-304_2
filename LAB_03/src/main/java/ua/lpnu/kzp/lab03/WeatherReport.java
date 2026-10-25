@@ -69,4 +69,18 @@ public final class WeatherReport {
          }
          return maxIndex;
     }
+    /**
+     * Демонструє вичерпний pattern switch для дозволених підтипів.
+     * @param reading непорожнє посилання на коректне вимірювання
+     * @return назва звичайного або штормового вимірювання
+     * @throws NullPointerException якщо reading дорівнює null
+     */
+    public static String describeReading(WeatherReading reading)
+    {
+        return switch(reading)
+        {
+            case DailyReading ignored -> "Звичайне вимірювання";
+            case StormReading ignored -> "Штормове вимірювання";
+        };
+    }
 }
