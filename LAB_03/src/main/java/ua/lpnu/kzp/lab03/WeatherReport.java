@@ -51,4 +51,22 @@ public final class WeatherReport {
         }
         return reportText;
     }
+    /**
+     * Знаходить найбільший індекс через спільний контракт вимірювань.
+     * @param readings список коректних вимірювань обох підтипів
+     * @return найбільший індекс; для порожнього списку — 0
+     */
+    public static double maxDangerIndex(List<WeatherReading> readings)
+    {
+        double maxIndex = 0;
+         for (WeatherReading reading : readings)
+         {
+             double currentIndex = reading.dangerIndex();
+             if (currentIndex > maxIndex)
+             {
+                maxIndex = currentIndex;
+             }
+         }
+         return maxIndex;
+    }
 }

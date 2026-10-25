@@ -65,7 +65,8 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.10.4.1</version>
+                <!-- Uses SpotBugs 4.10.5 with sealed-class analysis fixes. -->
+                <version>4.10.5.0</version>
                 <executions>
                     <execution>
                         <id>check-bugs</id>

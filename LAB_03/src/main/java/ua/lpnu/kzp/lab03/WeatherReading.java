@@ -6,7 +6,7 @@ import java.util.Locale;
  * Одне незмінне й перевірене вимірювання метеостанції.
  * Температура та вологість зберігаються разом у {@link TemperatureHumidity}.
  */
-public final class WeatherReading {
+public abstract sealed class WeatherReading permits DailyReading, StormReading {
     private final String date;
     private final TemperatureHumidity temperatureHumidity;
     private final double pressure;
@@ -22,8 +22,8 @@ public final class WeatherReading {
      * @param wind невід’ємний скінченний вітер, м/с
      * @throws IllegalArgumentException якщо хоча б одне поле некоректне
      */
-    public WeatherReading(String date, double temperature, double humidity,
-                          double pressure, double wind) {
+    public WeatherReading(String date, double temperature, double humidity, double pressure, double wind)
+    {
         this.temperatureHumidity = new TemperatureHumidity(temperature, humidity);
         this.wind = validateWind(wind);
         this.pressure = validatePressure(pressure);
@@ -32,7 +32,27 @@ public final class WeatherReading {
         }
         this.date = date.trim();
     }
+    /** Повертає навчальний індекс небезпеки.
+     * @return індекс, обчислений конкретним підтипом
+     */
+    public abstract double dangerIndex();
 
+    /** Повертає категорію вимірювання.
+     * @return категорія конкретного підтипу
+     */
+    public abstract WeatherKind getKind();
+
+    private static WeatherReading createReading(String date, double temperature, double humidity, double pressure, double wind)
+    {
+        if (wind < 15)
+        {
+            return new DailyReading(date, temperature, humidity, pressure, wind);
+        }
+        else
+        {
+            return new StormReading(date, temperature, humidity, pressure, wind);
+        }
+    }
     /**
      * Розбирає один CSV-рядок date;temperature;humidity;pressure;wind.
      * Спільні правила перевіряються в порядку LAB_01, щоб зберегти першу причину
@@ -62,7 +82,7 @@ public final class WeatherReading {
                     Double.parseDouble(fields[1].trim()));
             currentField = "тиск";
             double pressure = validatePressure(Double.parseDouble(fields[3].trim()));
-            return new WeatherReading(fields[0].trim(), temperature, humidity, pressure, wind);
+            return createReading(fields[0].trim(), temperature, humidity, pressure, wind);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(currentField + " не є числом", e);
         }
@@ -232,7 +252,7 @@ public final class WeatherReading {
          * @throws IllegalArgumentException якщо поле не задано або воно некоректне
          */
         public WeatherReading build() {
-            return new WeatherReading(date, temperature, humidity, pressure, wind);
+            return createReading(date, temperature, humidity, pressure, wind);
         }
     }
 }

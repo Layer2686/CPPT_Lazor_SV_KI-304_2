@@ -11,8 +11,10 @@
 LAB_01 і LAB_02 та їхні звіти збережено. Створено [план](PLAN.md)
 із посиланнями на Issues та [команди](README.md) окремої збірки й запуску.
 
-Нова ієрархія WeatherReading/DailyReading/StormReading, enum WeatherKind,
-поліморфний індекс небезпеки, equals/hashCode та sealed/switch ще не реалізовані.
+Реалізовані abstract sealed WeatherReading, DailyReading, StormReading,
+WeatherKind, фабричний вибір підтипу та поліморфний максимум індексу.
+У нових тестах перевіряються підтипи, поріг 15 м/с, фабрика, Builder та звіт.
+Equals/hashCode, HashSet та вичерпний pattern switch ще не реалізовані.
 Результати фінальних тестів, посилання на CI/артефакти й тег будуть додані
 лише після відповідних перевірок.
 

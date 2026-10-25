@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class WeatherReadingTest {
     @Test
     void constructorStoresAllFields() {
-        WeatherReading reading = new WeatherReading("2026-09-01", -5.5, 70, 1013, 3.2);
+        WeatherReading reading = new DailyReading("2026-09-01", -5.5, 70, 1013, 3.2);
 
         assertEquals("2026-09-01", reading.getDate());
         assertEquals(-5.5, reading.getTemperature(), 0.0001);
@@ -27,51 +27,51 @@ class WeatherReadingTest {
     @Test
     void constructorRejectsMissingOrMalformedDate() {
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading(null, 1, 50, 1000, 2));
+                () -> new DailyReading(null, 1, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("   ", 1, 50, 1000, 2));
+                () -> new DailyReading("   ", 1, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026/09/01", 1, 50, 1000, 2));
+                () -> new DailyReading("2026/09/01", 1, 50, 1000, 2));
     }
 
     @Test
     void constructorRejectsValuesOutsideDomain() {
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, -1, 1000, 2));
+                () -> new DailyReading("2026-09-01", 1, -1, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 101, 1000, 2));
+                () -> new DailyReading("2026-09-01", 1, 101, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, 0, 2));
+                () -> new DailyReading("2026-09-01", 1, 50, 0, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, -1, 2));
+                () -> new DailyReading("2026-09-01", 1, 50, -1, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, 1000, -1));
+                () -> new DailyReading("2026-09-01", 1, 50, 1000, -1));
     }
 
     @Test
     void constructorRejectsNonFiniteNumbers() {
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", Double.NaN, 50, 1000, 2));
+                () -> new DailyReading("2026-09-01", Double.NaN, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", Double.POSITIVE_INFINITY, 50, 1000, 2));
+                () -> new DailyReading("2026-09-01", Double.POSITIVE_INFINITY, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, Double.NaN, 1000, 2));
+                () -> new DailyReading("2026-09-01", 1, Double.NaN, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, Double.POSITIVE_INFINITY, 1000, 2));
+                () -> new DailyReading("2026-09-01", 1, Double.POSITIVE_INFINITY, 1000, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, Double.NaN, 2));
+                () -> new DailyReading("2026-09-01", 1, 50, Double.NaN, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, Double.NEGATIVE_INFINITY, 2));
+                () -> new DailyReading("2026-09-01", 1, 50, Double.NEGATIVE_INFINITY, 2));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, 1000, Double.NaN));
+                () -> new DailyReading("2026-09-01", 1, 50, 1000, Double.NaN));
         assertThrows(IllegalArgumentException.class,
-                () -> new WeatherReading("2026-09-01", 1, 50, 1000, Double.POSITIVE_INFINITY));
+                () -> new DailyReading("2026-09-01", 1, 50, 1000, Double.POSITIVE_INFINITY));
     }
 
     @Test
     void acceptsBoundaryValuesAndNegativeTemperature() {
-        WeatherReading dry = new WeatherReading("2026-09-01", -20, 0, 0.01, 0);
-        WeatherReading humid = new WeatherReading("2026-09-02", 0, 100, 1000, 0);
+        WeatherReading dry = new DailyReading("2026-09-01", -20, 0, 0.01, 0);
+        WeatherReading humid = new DailyReading("2026-09-02", 0, 100, 1000, 0);
 
         assertEquals(-20, dry.getTemperature(), 0.0001);
         assertEquals(0, dry.getHumidity(), 0.0001);
@@ -134,7 +134,7 @@ class WeatherReadingTest {
         Locale previous = Locale.getDefault(Locale.Category.FORMAT);
         try {
             Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
-            WeatherReading reading = new WeatherReading("2026-09-01", -5.5, 70, 1013, 3.2);
+            WeatherReading reading = new DailyReading("2026-09-01", -5.5, 70, 1013, 3.2);
 
             assertEquals("2026-09-01: -5.50 °C, 70.00 %, 1013.00 гПа, 3.20 м/с",
                     reading.toString());
