@@ -1,6 +1,7 @@
 package ua.lpnu.kzp.lab03;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Одне незмінне й перевірене вимірювання метеостанції.
@@ -167,6 +168,32 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading {
                 date, getTemperature(), getHumidity(), pressure, wind);
     }
 
+    /**
+     * Порівнює вимірювання за конкретним класом і всіма полями стану.
+     * @param other об’єкт для порівняння
+     * @return true для вимірювання того самого підтипу з однаковими даними
+     */
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        WeatherReading reading = (WeatherReading) other;
+        return date.equals(reading.date) && temperatureHumidity.equals(reading.temperatureHumidity) && Double.compare (wind, reading.wind) == 0
+            && Double.compare (pressure, reading.pressure) == 0;
+    }
+    /**
+     * Обчислює хеш за тими самими даними, які використовує equals.
+     * @return хеш-код класу, дати, тиску, вітру й пари температури та вологості
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), date, pressure, wind, temperatureHumidity);
+    }
     /**
      * Повертає новий будівник, у якому потрібно задати всі п’ять полів.
      *
