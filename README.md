@@ -7,10 +7,12 @@
 | [LAB_01](LAB_01) | Обробка CSV через рядки та змінні | 1.0.0 | [Звіт №1](REPORT.md) |
 | [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
 | [LAB_03](LAB_03) | Підтипи, enum, рівність та консольний аналіз --danger | 1.2.0 | [Запуск №3](LAB_03/README.md), [звіт №3](LAB_03/REPORT.md), [план №3](LAB_03/PLAN.md) |
+| [LAB_04](LAB_04) | Підготовча копія №3; Stream API ще в роботі | 1.3.0-SNAPSHOT | [Запуск №4](LAB_04/README.md), [план №4](LAB_04/PLAN.md) |
 
-`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі три модулі.
+`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі чотири модулі в гілці lab04.
+Окрема перевірка четвертої: `./mvnw -B -pl LAB_04 -am verify`.
 Окрема перевірка третьої роботи: `./mvnw -B -pl LAB_03 -am verify`.
-Команди нижче демонструють LAB_01; окремі команди LAB_02 та LAB_03 — у таблиці.
+Команди нижче демонструють LAB_01; окремі команди LAB_02–LAB_04 — у таблиці.
 Для аналізу індексів у LAB_03 використовуйте прапорець `--danger`.
 Фінальна версія №3: [v1.2.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.2.0), [CI трьох ОС та артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40239715250).
 Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
