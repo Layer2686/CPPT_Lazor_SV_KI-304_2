@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Перевірки потокових запитів: межі відбору, порядок і збереження джерела. */
 class WeatherQueriesTest
@@ -138,6 +140,28 @@ class WeatherQueriesTest
     }
 
     @Test
+    void findsEitherSubtypeAndReturnsFirstReadingForRepeatedDate()
+    {
+        WeatherReading first = new DailyReading("2026-09-02", 25, 70, 1013, 3);
+        WeatherReading otherDate = new StormReading("2026-09-01", 20, 70, 1013, 20);
+        WeatherReading repeatedDate = new StormReading("2026-09-02", 12, 50, 1008, 16);
+        List<WeatherReading> readings = List.of(first, otherDate, repeatedDate);
+
+        assertSame(first, WeatherQueries.findByDate(readings, LocalDate.of(2026, 9, 2)).orElseThrow());
+        assertSame(otherDate, WeatherQueries.findByDate(readings, LocalDate.of(2026, 9, 1)).orElseThrow());
+    }
+
+    @Test
+    void missingDateEmptyInputAndNullDateReturnEmptyOptional()
+    {
+        WeatherReading reading = new DailyReading("2026-09-01", 10, 70, 1013, 2);
+
+        assertTrue(WeatherQueries.findByDate(List.of(reading), LocalDate.of(2026, 12, 31)).isEmpty());
+        assertTrue(WeatherQueries.findByDate(List.of(), LocalDate.of(2026, 9, 1)).isEmpty());
+        assertTrue(WeatherQueries.findByDate(List.of(reading), null).isEmpty());
+    }
+
+    @Test
     void queriesDoNotChangeInputContentsOrOrder()
     {
         List<WeatherReading> readings = new ArrayList<>(List.of(
@@ -150,6 +174,7 @@ class WeatherQueriesTest
         WeatherQueries.averageTemperatureByMonth(readings);
         WeatherQueries.temperatureStatistics(readings);
         WeatherQueries.topByTemperature(readings, 1);
+        WeatherQueries.findByDate(readings, LocalDate.of(2026, 9, 1));
 
         assertEquals(before, readings);
     }

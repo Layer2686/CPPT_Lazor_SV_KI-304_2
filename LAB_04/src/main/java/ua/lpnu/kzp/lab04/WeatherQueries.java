@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.DoubleSummaryStatistics;
 import java.util.Comparator;
-
+import java.util.Optional;
 /** Потокові запити до вимірювань без зміни вхідного списку. */
 public final class WeatherQueries
 {
@@ -85,5 +85,17 @@ public final class WeatherQueries
             Comparator.comparingDouble((WeatherReading reading) -> reading.getTemperature()).reversed()
                 .thenComparing(reading -> reading.getDate());
         return readings.stream().sorted(order).limit(limit).toList();
+    }
+
+    /**
+     * Шукає перше вимірювання заданої дати в початковому порядку списку.
+     *
+     * @param readings початковий список коректних вимірювань
+     * @param requestedDate дата пошуку; null не відповідає жодній даті
+     * @return перший збіг або порожній Optional, якщо збігу немає
+     */
+    public static Optional<WeatherReading> findByDate(List<WeatherReading> readings, LocalDate requestedDate)
+    {
+        return readings.stream().filter(reading -> reading.getDate().equals(requestedDate)).findFirst();
     }
 }
