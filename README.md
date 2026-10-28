@@ -15,6 +15,7 @@
 Команди нижче демонструють LAB_01; окремі команди LAB_02–LAB_04 — у таблиці.
 Для аналізу індексів у LAB_03/LAB_04 використовуйте `--danger`.
 У LAB_04 прапорець `--queries` показує п’ять запитів, пошук і дворівневе групування.
+Фінальна версія №4: [v1.3.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.3.0), [CI тега й артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390).
 Фінальна версія №3: [v1.2.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.2.0), [CI трьох ОС та артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40239715250).
 Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 
