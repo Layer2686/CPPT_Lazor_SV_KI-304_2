@@ -6,6 +6,7 @@ import java.time.YearMonth;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.DoubleSummaryStatistics;
+import java.util.Comparator;
 
 /** Потокові запити до вимірювань без зміни вхідного списку. */
 public final class WeatherQueries
@@ -63,5 +64,26 @@ public final class WeatherQueries
     public static DoubleSummaryStatistics temperatureStatistics(List<WeatherReading> readings)
     {
         return readings.stream().collect(Collectors.summarizingDouble(reading -> reading.getTemperature()));
+    }
+
+    /**
+     * Вибирає не більше limit записів за спаданням температури, потім за зростанням дати.
+     *
+     * @param readings початковий список коректних вимірювань
+     * @param limit максимальна кількість записів; 0 повертає порожній список
+     * @return незмінний відсортований список; завеликий limit залишає всі записи,
+     *         повторення зберігаються
+     * @throws IllegalArgumentException якщо limit від’ємний
+     */
+    public static List<WeatherReading> topByTemperature(List<WeatherReading> readings, int limit)
+    {
+        if (limit < 0)
+        {
+            throw new IllegalArgumentException("Кількість записів не може бути від’ємною");
+        }
+        Comparator<WeatherReading> order =
+            Comparator.comparingDouble((WeatherReading reading) -> reading.getTemperature()).reversed()
+                .thenComparing(reading -> reading.getDate());
+        return readings.stream().sorted(order).limit(limit).toList();
     }
 }

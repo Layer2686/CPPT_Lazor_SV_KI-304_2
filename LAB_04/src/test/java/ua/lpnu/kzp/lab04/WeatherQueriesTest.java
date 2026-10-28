@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Перевірки потокових запитів: межі відбору, порядок і збереження джерела. */
 class WeatherQueriesTest
@@ -98,6 +99,45 @@ class WeatherQueriesTest
     }
 
     @Test
+    void topFiveSortsByDescendingTemperatureThenAscendingDate()
+    {
+        WeatherReading cold = new DailyReading("2026-09-01", -5, 70, 1013, 2);
+        WeatherReading warmLate = new StormReading("2026-09-03", 25, 70, 1013, 20);
+        WeatherReading warmEarly = new DailyReading("2026-09-02", 25, 70, 1013, 3);
+        WeatherReading mild = new DailyReading("2026-09-04", 18, 70, 1013, 2);
+        WeatherReading cool = new DailyReading("2026-09-05", 10, 70, 1013, 2);
+        WeatherReading zero = new DailyReading("2026-09-06", 0, 70, 1013, 2);
+        List<WeatherReading> readings = List.of(cold, warmLate, warmEarly, mild, cool, zero);
+
+        assertEquals(List.of(warmEarly, warmLate, mild, cool, zero),
+                WeatherQueries.topByTemperature(readings, 5));
+        assertEquals(List.of(warmEarly, warmLate, mild, cool, zero, cold),
+                WeatherQueries.topByTemperature(readings, 100));
+    }
+
+    @Test
+    void topHandlesZeroEmptyInputAndRejectsNegativeLimit()
+    {
+        WeatherReading reading = new DailyReading("2026-09-01", 10, 70, 1013, 2);
+
+        assertEquals(List.of(), WeatherQueries.topByTemperature(List.of(reading), 0));
+        assertEquals(List.of(), WeatherQueries.topByTemperature(List.of(), 5));
+        assertThrows(IllegalArgumentException.class,
+                () -> WeatherQueries.topByTemperature(List.of(reading), -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> WeatherQueries.topByTemperature(List.of(), -1));
+    }
+
+    @Test
+    void topRetainsDuplicateMeasurements()
+    {
+        WeatherReading reading = new DailyReading("2026-09-01", 10, 70, 1013, 2);
+
+        assertEquals(List.of(reading, reading),
+                WeatherQueries.topByTemperature(List.of(reading, reading), 5));
+    }
+
+    @Test
     void queriesDoNotChangeInputContentsOrOrder()
     {
         List<WeatherReading> readings = new ArrayList<>(List.of(
@@ -109,6 +149,7 @@ class WeatherQueriesTest
         WeatherQueries.dates(readings);
         WeatherQueries.averageTemperatureByMonth(readings);
         WeatherQueries.temperatureStatistics(readings);
+        WeatherQueries.topByTemperature(readings, 1);
 
         assertEquals(before, readings);
     }
