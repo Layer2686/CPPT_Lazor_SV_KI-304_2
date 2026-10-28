@@ -7,7 +7,7 @@
 | [LAB_01](LAB_01) | Обробка CSV через рядки та змінні | 1.0.0 | [Звіт №1](REPORT.md) |
 | [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
 | [LAB_03](LAB_03) | Підтипи, enum, рівність та консольний аналіз --danger | 1.2.0 | [Запуск №3](LAB_03/README.md), [звіт №3](LAB_03/REPORT.md), [план №3](LAB_03/PLAN.md) |
-| [LAB_04](LAB_04) | Stream API, Optional, групування та консольний --queries | 1.3.0-SNAPSHOT | [Запуск №4](LAB_04/README.md), [план №4](LAB_04/PLAN.md) |
+| [LAB_04](LAB_04) | Stream API, Optional, групування та консольний --queries | 1.3.0 | [Запуск №4](LAB_04/README.md), [план №4](LAB_04/PLAN.md) |
 
 `./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі чотири модулі в гілці lab04.
 Окрема перевірка четвертої: `./mvnw -B -pl LAB_04 -am verify`.
