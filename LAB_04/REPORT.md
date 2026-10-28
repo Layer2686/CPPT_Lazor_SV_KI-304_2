@@ -338,26 +338,21 @@ javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_04/targ
 HTML відкривається через LAB_04/target/apidocs/index.html; згенеровані файли
 не додаються до Git. PowerShell-команда з переліком Java-файлів є в [README](README.md).
 
-[CI №99](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119) запущено для коміту 20e3079
-(підготовча версія 1.3.0-SNAPSHOT). Результати перевірки:
+[CI №100](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582) перевірив версію 1.3.0
+коміту [98854ff](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/98854ff39c0c6f8af3bff44bd380552efc5c0cb9) на трьох ОС:
 
 | ОС | Результат | JAR LAB_04 |
 | --- | --- | --- |
-| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119/job/123117581465) | [lab04-Linux-99](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119/artifacts/12852748961) |
-| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119/job/123117580922) | [lab04-Windows-99](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119/artifacts/12853233346) |
-| macOS | [QUEUED](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40773768119/job/123117581318) | Ще не опублікований цим завданням |
+| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/job/123124163287) | [lab04-Linux-100](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/artifacts/12855435206) |
+| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/job/123124162869) | [lab04-Windows-100](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/artifacts/12855235495) |
+| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/job/123124163195) | [lab04-macOS-100](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40775654582/artifacts/12855200572) |
 
 CI виконує clean verify всіх чотирьох модулів, Javadoc та запуски
 справжніх JAR. Оновлений check-jars.ps1 перевіряє --queries на тому самому
 демонстраційному CSV: дати, статистику, фільтр, top-5, середні, знайдений
 і відсутній пошук, категорійні групи та незмінність файла. Частина
 перевірок формату також виконується JUnit-тестами. Конфігурація передбачає
-12 артефактів (4 модулі × 3 ОС).
-
-Попередній [CI 42c9e89](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40762372884)
-успішний на трьох ОС, але ще не включає завершальний --queries.
-Результати завершального CLI наведені в таблиці CI №99.
-
+Доступні 12 артефактів (4 модулі × 3 ОС).
 
 ## 12. GitHub Issues і Pull Request
 
