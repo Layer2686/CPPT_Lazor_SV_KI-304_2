@@ -21,6 +21,7 @@ class ArgumentParserTest
         assertFalse(options.help());
         assertFalse(options.version());
         assertFalse(options.danger());
+        assertFalse(options.queries());
     }
 
     @Test
@@ -66,6 +67,8 @@ class ArgumentParserTest
         assertFalse(version.help());
         assertFalse(help.danger());
         assertFalse(version.danger());
+        assertFalse(help.queries());
+        assertFalse(version.queries());
         assertThrows(IllegalArgumentException.class,
                 () -> ArgumentParser.parse(new String[]
                 {
@@ -107,11 +110,11 @@ class ArgumentParserTest
     void optionsRejectMissingPathsAndConflictingModes()
     {
         assertThrows(IllegalArgumentException.class,
-                () -> new CommandLineOptions(null, Path.of("report.txt"), false, false, false));
+                () -> new CommandLineOptions(null, Path.of("report.txt"), false, false, false, false));
         assertThrows(IllegalArgumentException.class,
-                () -> new CommandLineOptions(Path.of("input.csv"), null, false, false, false));
+                () -> new CommandLineOptions(Path.of("input.csv"), null, false, false, false, false));
         assertThrows(IllegalArgumentException.class,
-                () -> new CommandLineOptions(Path.of("input.csv"), Path.of("report.txt"), true, true, false));
+                () -> new CommandLineOptions(Path.of("input.csv"), Path.of("report.txt"), true, true, false, false));
     }
 
     @Test
@@ -133,7 +136,7 @@ class ArgumentParserTest
     void dangerWorksBeforeBetweenAndAfterPathOptions()
     {
         CommandLineOptions expected = new CommandLineOptions(
-                Path.of("input.csv"), Path.of("report.txt"), false, false, true);
+                Path.of("input.csv"), Path.of("report.txt"), false, false, true, false);
 
         assertEquals(expected, ArgumentParser.parse(new String[]
         {
@@ -162,6 +165,78 @@ class ArgumentParserTest
                 () -> ArgumentParser.parse(new String[]
                 {
                     "--danger", "true"
+                }));
+    }
+
+    @Test
+    void queriesWithoutArgumentsUsesDefaultPaths()
+    {
+        CommandLineOptions options = ArgumentParser.parse(new String[]
+        {
+            "--queries"
+        });
+
+        assertTrue(options.queries());
+        assertFalse(options.danger());
+        assertEquals(Path.of("data/input.csv"), options.inputPath());
+        assertEquals(Path.of("out/report.txt"), options.outputPath());
+    }
+
+    @Test
+    void queriesWorksInAnyPositionCanRepeatAndCombineWithDanger()
+    {
+        CommandLineOptions expected = new CommandLineOptions(
+                Path.of("input.csv"), Path.of("report.txt"), false, false, false, true);
+
+        assertEquals(expected, ArgumentParser.parse(new String[]
+        {
+            "--queries", "--input", "input.csv", "--output", "report.txt"
+        }));
+        assertEquals(expected, ArgumentParser.parse(new String[]
+        {
+            "--input", "input.csv", "--queries", "--output", "report.txt"
+        }));
+        assertEquals(expected, ArgumentParser.parse(new String[]
+        {
+            "--output", "report.txt", "--input", "input.csv", "--queries", "--queries"
+        }));
+        CommandLineOptions combined = ArgumentParser.parse(new String[]
+        {
+            "--queries", "--danger", "--queries"
+        });
+        assertTrue(combined.queries());
+        assertTrue(combined.danger());
+    }
+
+    @Test
+    void queriesRejectsAValueCannotReplaceAPathOrJoinHelpAndVersion()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> ArgumentParser.parse(new String[]
+                {
+                    "--queries", "true"
+                }));
+        IllegalArgumentException missingInput = assertThrows(IllegalArgumentException.class,
+                () -> ArgumentParser.parse(new String[]
+                {
+                    "--input", "--queries"
+                }));
+        IllegalArgumentException missingOutput = assertThrows(IllegalArgumentException.class,
+                () -> ArgumentParser.parse(new String[]
+                {
+                    "--output", "--queries"
+                }));
+        assertEquals("Після --input бракує шляху", missingInput.getMessage());
+        assertEquals("Після --output бракує шляху", missingOutput.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> ArgumentParser.parse(new String[]
+                {
+                    "--help", "--queries"
+                }));
+        assertThrows(IllegalArgumentException.class,
+                () -> ArgumentParser.parse(new String[]
+                {
+                    "--queries", "--version"
                 }));
     }
 

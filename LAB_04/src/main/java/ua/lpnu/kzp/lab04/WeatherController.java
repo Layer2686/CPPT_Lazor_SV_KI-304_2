@@ -76,6 +76,10 @@ public final class WeatherController
         {
             System.out.print(WeatherReport.formatDangerReport(readings));
         }
+        if (options.queries())
+        {
+            System.out.print(QueryReport.format(readings));
+        }
         try
         {
             files.write(options.outputPath(), reportText);

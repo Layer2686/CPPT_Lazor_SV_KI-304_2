@@ -32,6 +32,49 @@ class MainTest
     String errorText;
 
     @Test
+    void queriesAndCombinedDangerAddOnlyConsoleOutput() throws IOException
+    {
+        Path input = tempDir.resolve("queries.csv");
+        Path output = tempDir.resolve("report.txt");
+        Files.writeString(input, "2026-09-02;10;70;1013;3\n2026-09-03;20;70;1013;20\n", StandardCharsets.UTF_8);
+        runMain("--input", input.toString(), "--output", output.toString());
+        String baselineConsole = consoleText;
+        String baselineFile = Files.readString(output, StandardCharsets.UTF_8);
+
+        runMain("--queries", "--input", input.toString(), "--output", output.toString());
+        String queriesConsole = consoleText;
+        assertTrue(queriesConsole.startsWith(baselineConsole));
+        assertTrue(queriesConsole.contains("Середня температура за місяцями та категоріями:"));
+        assertEquals(baselineFile, Files.readString(output, StandardCharsets.UTF_8));
+        assertEquals("", errorText);
+
+        runMain("--danger", "--queries", "--input", input.toString(), "--output", output.toString());
+        assertTrue(consoleText.contains("Максимальний індекс небезпеки: 40.00"));
+        assertTrue(consoleText.endsWith(queriesConsole.substring(baselineConsole.length())));
+        assertEquals(baselineFile, Files.readString(output, StandardCharsets.UTF_8));
+        assertEquals("", errorText);
+    }
+
+    @Test
+    void queriesHandleEmptyAndEntirelyInvalidFiles() throws IOException
+    {
+        Path input = tempDir.resolve("empty.csv");
+        Path output = tempDir.resolve("report.txt");
+        for (String csv : new String[]
+        {
+            "", "bad-date;10;70;1013;2\n"
+        })
+        {
+            Files.writeString(input, csv, StandardCharsets.UTF_8);
+            runMain("--queries", "--input", input.toString(), "--output", output.toString());
+            assertTrue(consoleText.contains("Немає даних для потокових запитів"));
+            assertFalse(consoleText.contains("Infinity"));
+            assertFalse(Files.readString(output, StandardCharsets.UTF_8).contains("потокових"));
+            assertEquals("", errorText);
+        }
+    }
+
+    @Test
     void dangerAddsConsoleAnalysisWithoutChangingTheOutputFile() throws IOException
     {
         Path input = tempDir.resolve("danger.csv");
@@ -224,6 +267,7 @@ class MainTest
         assertTrue(consoleText.contains("--input"));
         assertTrue(consoleText.contains("--output"));
         assertTrue(consoleText.contains("--danger"));
+        assertTrue(consoleText.contains("--queries"));
         assertFalse(consoleText.contains("Кількість коректних записів:"));
         assertEquals("", errorText);
 

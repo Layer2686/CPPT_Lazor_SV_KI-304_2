@@ -10,8 +10,9 @@ import java.nio.file.Path;
  * @param help чи потрібно показати лише довідку
  * @param version чи потрібно показати лише версію
  * @param danger чи потрібно показати додатковий аналіз небезпеки
+ * @param queries чи потрібно показати результати потокових запитів
  */
-public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version, boolean danger)
+public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version, boolean danger, boolean queries)
 {
     /**
      * Перевіряє наявність шляхів і сумісність режимів.
