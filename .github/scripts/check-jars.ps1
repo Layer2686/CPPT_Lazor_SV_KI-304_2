@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $reports = @{}
 $consoles = @{}
 
-foreach ($name in @('lab01', 'lab02', 'lab03')) {
+foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04')) {
     $module = $name.ToUpperInvariant().Replace('LAB', 'LAB_')
     $jarPath = (Resolve-Path -LiteralPath "$module/target/$name.jar").Path
     $inputPath = (Resolve-Path -LiteralPath "$module/data/input.csv").Path
@@ -29,9 +29,9 @@ foreach ($name in @('lab01', 'lab02', 'lab03')) {
     }
     Write-Output "Version check passed: $expectedVersion"
 
-    if ($name -eq 'lab03' -and $env:GITHUB_REF_TYPE -eq 'tag') {
+    if ($name -eq 'lab04' -and $env:GITHUB_REF_TYPE -eq 'tag') {
         if ($env:GITHUB_REF_NAME -cne "v$version") {
-            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_03 version '$version'"
+            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_04 version '$version'"
         }
     }
 
@@ -53,8 +53,11 @@ foreach ($name in @('lab01', 'lab02', 'lab03')) {
     }
     Write-Output "Help check passed: $name"
 
-    if ($name -eq 'lab03' -and $help -cnotcontains '--danger        показати додатковий аналіз небезпеки') {
-        throw 'LAB_03 help does not describe --danger'
+    if ($name -in @('lab03', 'lab04') -and $help -cnotcontains '--danger        показати додатковий аналіз небезпеки') {
+        throw "$module help does not describe --danger"
+    }
+    if ($name -eq 'lab04' -and $help -cnotcontains '--queries       показати результати потокових запитів') {
+        throw 'LAB_04 help does not describe --queries'
     }
 
     # Файл без батьківського каталогу перевіряється з тимчасової робочої папки.
@@ -90,42 +93,77 @@ foreach ($name in @('lab01', 'lab02', 'lab03')) {
     Write-Output "JAR check passed: $name; UTF-8 report.txt without a parent directory."
 }
 
-foreach ($name in @('lab02', 'lab03')) {
+foreach ($name in @('lab02', 'lab03', 'lab04')) {
     if ($reports['lab01'] -cne $reports[$name] -or $consoles['lab01'] -cne $consoles[$name]) {
         throw "LAB_01 and $name produce different results for the reference CSV"
     }
 }
-Write-Output 'Compatibility check passed: LAB_01, LAB_02 and LAB_03 console/file reports are identical.'
+Write-Output 'Compatibility check passed: LAB_01, LAB_02, LAB_03 and LAB_04 console/file reports are identical.'
 
 # Новий режим перевіряється окремо; старі лабораторні не мають цього ключа.
-$dangerJar = (Resolve-Path -LiteralPath 'LAB_03/target/lab03.jar').Path
-$dangerInput = (Resolve-Path -LiteralPath 'LAB_03/data/danger-example.csv').Path
-$plainFile = Join-Path $env:RUNNER_TEMP 'lab03-danger/plain.txt'
-$dangerFile = Join-Path $env:RUNNER_TEMP 'lab03-danger/danger.txt'
-$plainOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --input $dangerInput --output $plainFile)
-if ($LASTEXITCODE -ne 0) {
-    throw 'LAB_03 baseline command for danger fixture failed'
-}
-$dangerOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --danger --input $dangerInput --output $dangerFile)
-if ($LASTEXITCODE -ne 0) {
-    throw 'LAB_03 --danger command failed'
-}
-$dangerLines = @(
-    'Додатковий аналіз небезпеки:'
-    '2026-09-01: Звичайне вимірювання, індекс 7.50'
-    '2026-09-02: Штормове вимірювання, індекс 40.00'
-    'Максимальний індекс небезпеки: 40.00'
-)
-foreach ($line in $dangerLines) {
-    if ($dangerOutput -cnotcontains $line) {
-        throw "LAB_03 danger analysis line is missing: $line"
+foreach ($dangerName in @('lab03', 'lab04')) {
+    $dangerModule = $dangerName.ToUpperInvariant().Replace('LAB', 'LAB_')
+    $dangerJar = (Resolve-Path -LiteralPath "$dangerModule/target/$dangerName.jar").Path
+    $dangerInput = (Resolve-Path -LiteralPath "$dangerModule/data/danger-example.csv").Path
+    $plainFile = Join-Path $env:RUNNER_TEMP "$dangerName-danger/plain.txt"
+    $dangerFile = Join-Path $env:RUNNER_TEMP "$dangerName-danger/danger.txt"
+    $plainOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --input $dangerInput --output $plainFile)
+    if ($LASTEXITCODE -ne 0) {
+        throw "$dangerModule baseline command for danger fixture failed"
     }
+    $dangerOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $dangerJar --danger --input $dangerInput --output $dangerFile)
+    if ($LASTEXITCODE -ne 0) {
+        throw "$dangerModule --danger command failed"
+    }
+    $dangerLines = @(
+        'Додатковий аналіз небезпеки:'
+        '2026-09-01: Звичайне вимірювання, індекс 7.50'
+        '2026-09-02: Штормове вимірювання, індекс 40.00'
+        'Максимальний індекс небезпеки: 40.00'
+    )
+    foreach ($line in $dangerLines) {
+        if ($dangerOutput -cnotcontains $line) {
+            throw "$dangerModule danger analysis line is missing: $line"
+        }
+    }
+    $plainText = ($plainOutput -join [Environment]::NewLine) + [Environment]::NewLine
+    $dangerText = ($dangerOutput -join [Environment]::NewLine) + [Environment]::NewLine
+    $plainReport = Get-Content -LiteralPath $plainFile -Raw -Encoding utf8
+    $dangerReport = Get-Content -LiteralPath $dangerFile -Raw -Encoding utf8
+    if (-not $dangerText.StartsWith($plainText) -or $plainReport -cne $dangerReport -or $dangerReport.Contains('індекс')) {
+        throw "$dangerModule --danger changed the standard console/file report"
+    }
+    Write-Output 'Danger CLI check passed: extra console analysis; standard UTF-8 file unchanged.'
 }
-$plainText = ($plainOutput -join [Environment]::NewLine) + [Environment]::NewLine
-$dangerText = ($dangerOutput -join [Environment]::NewLine) + [Environment]::NewLine
-$plainReport = Get-Content -LiteralPath $plainFile -Raw -Encoding utf8
-$dangerReport = Get-Content -LiteralPath $dangerFile -Raw -Encoding utf8
-if (-not $dangerText.StartsWith($plainText) -or $plainReport -cne $dangerReport -or $dangerReport.Contains('індекс')) {
-    throw 'LAB_03 --danger changed the standard console/file report'
+
+# Перевірка нового режиму на реальному JAR і спільному демонстраційному CSV.
+$queriesJar = (Resolve-Path -LiteralPath 'LAB_04/target/lab04.jar').Path
+$queriesInput = (Resolve-Path -LiteralPath 'LAB_04/data/queries-example.csv').Path
+$queriesFile = Join-Path $env:RUNNER_TEMP 'lab04-queries/report.txt'
+$queriesPlain = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --input $queriesInput --output $queriesFile)
+if ($LASTEXITCODE -ne 0) { throw 'LAB_04 queries baseline command failed' }
+$queriesPlainFile = Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8
+$queriesOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --queries --input $queriesInput --output $queriesFile)
+if ($LASTEXITCODE -ne 0) { throw 'LAB_04 --queries command failed' }
+foreach ($line in @(
+    'Результати потокових запитів:'
+    'Дати: [2026-09-01, 2026-09-02, 2026-09-03, 2026-10-01, 2026-10-02, 2026-10-03, 2026-09-02]'
+    'Кількість: 7, сума: 90.00, мінімум: -5.00, максимум: 25.00, середнє: 12.86'
+    'Вимірювання з вітром понад 15 м/с:'
+    'Top-5 за температурою:'
+    '2026-09: 18.00 °C'
+    '2026-10: 6.00 °C'
+    'Пошук за датою 2026-09-02: 2026-09-02: 25.00 °C, 60.00 %, 1010.00 гПа, 15.00 м/с'
+    'Пошук за датою 2026-12-31: Не знайдено'
+    'Середня температура за місяцями та категоріями:'
+    '    STORM: 20.67 °C'
+)) {
+    if ($queriesOutput -cnotcontains $line) { throw "LAB_04 query result is missing: $line" }
 }
-Write-Output 'Danger CLI check passed: extra console analysis; standard UTF-8 file unchanged.'
+$plainQueriesText = ($queriesPlain -join [Environment]::NewLine) + [Environment]::NewLine
+$queriesText = ($queriesOutput -join [Environment]::NewLine) + [Environment]::NewLine
+if (-not $queriesText.StartsWith($plainQueriesText) -or
+    $queriesPlainFile -cne (Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8)) {
+    throw 'LAB_04 --queries changed the standard console/file report'
+}
+Write-Output 'Queries CLI check passed: all queries and unchanged UTF-8 file.'

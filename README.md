@@ -7,11 +7,14 @@
 | [LAB_01](LAB_01) | Обробка CSV через рядки та змінні | 1.0.0 | [Звіт №1](REPORT.md) |
 | [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
 | [LAB_03](LAB_03) | Підтипи, enum, рівність та консольний аналіз --danger | 1.2.0 | [Запуск №3](LAB_03/README.md), [звіт №3](LAB_03/REPORT.md), [план №3](LAB_03/PLAN.md) |
+| [LAB_04](LAB_04) | Stream API, Optional, групування та консольний --queries | 1.3.0 | [Запуск №4](LAB_04/README.md), [план №4](LAB_04/PLAN.md) |
 
-`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі три модулі.
+`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі чотири модулі в гілці lab04.
+Окрема перевірка четвертої: `./mvnw -B -pl LAB_04 -am verify`.
 Окрема перевірка третьої роботи: `./mvnw -B -pl LAB_03 -am verify`.
-Команди нижче демонструють LAB_01; окремі команди LAB_02 та LAB_03 — у таблиці.
-Для аналізу індексів у LAB_03 використовуйте прапорець `--danger`.
+Команди нижче демонструють LAB_01; окремі команди LAB_02–LAB_04 — у таблиці.
+Для аналізу індексів у LAB_03/LAB_04 використовуйте `--danger`.
+У LAB_04 прапорець `--queries` показує п’ять запитів, пошук і дворівневе групування.
 Фінальна версія №3: [v1.2.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.2.0), [CI трьох ОС та артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40239715250).
 Фінальна версія №2: [v1.1.1](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.1.1), [CI трьох ОС](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/39641384246).
 
@@ -21,52 +24,12 @@
 максимальну швидкість вітру. Один звіт із показниками та помилками
 виводиться в консоль і записується у файл UTF-8.
 
-## Встановлення та отримання проєкту
+## Отримання проєкту
 
-Потрібні Git, JDK 21 та інтернет для першої збірки. Maven встановить Wrapper.
-Якщо `JAVA_HOME` вже задана, вона має вказувати на JDK 21.
-
-**Ubuntu 24.04+** ([пакет JDK](https://packages.ubuntu.com/noble/openjdk-21-jdk)):
+Потрібні Git і JDK 21. Maven 3.9.9 завантажить Wrapper під час першої збірки.
+Якщо JAVA_HOME задана, вона має вказувати на JDK 21.
 
 ```sh
-sudo apt update
-sudo apt install git openjdk-21-jdk
-```
-
-**Arch / EndeavourOS** ([пакет JDK](https://archlinux.org/packages/extra/x86_64/jdk21-openjdk/)):
-
-```sh
-sudo pacman -Syu --needed git jdk21-openjdk
-sudo archlinux-java set java-21-openjdk
-```
-
-**macOS** із встановленим [Homebrew](https://brew.sh/)
-([Temurin 21](https://formulae.brew.sh/cask/temurin%4021)):
-
-```sh
-brew install git
-brew install --cask temurin@21
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-export PATH="$JAVA_HOME/bin:$PATH"
-```
-
-**Windows PowerShell** із WinGet
-([Git](https://git-scm.com/install/windows), [JDK](https://learn.microsoft.com/en-us/windows/dev-environment/java)):
-
-```powershell
-winget install --id Git.Git --exact
-winget install --id EclipseAdoptium.Temurin.21.JDK --exact
-```
-
-Після встановлення на Windows відкрийте новий термінал. Без пакетного менеджера
-встановіть [Git](https://git-scm.com/install/) та
-[Temurin JDK 21](https://adoptium.net/temurin/releases/?version=21) через інсталятори.
-Перевірте, що `java` та `javac` показують версію 21:
-
-```sh
-git --version
-java -version
-javac -version
 git clone https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2.git
 cd CPPT_Lazor_SV_KI-304_2
 ```
