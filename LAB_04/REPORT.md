@@ -354,6 +354,29 @@ CI виконує clean verify всіх чотирьох модулів, Javadoc
 перевірок формату також виконується JUnit-тестами. Конфігурація передбачає
 Доступні 12 артефактів (4 модулі × 3 ОС).
 
+
+
+### Релізна перевірка v1.3.0
+
+[Тег v1.3.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.3.0) вказує на коміт 3fcb4cf —
+результат [PR #65](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/65). [CI тега №106](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390) успішний на трьох ОС:
+
+| ОС | Перевірка | JAR LAB_04 |
+| --- | --- | --- |
+| Ubuntu | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/job/123130412765) | [lab04-Linux-106](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/artifacts/12855427826) |
+| Windows | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/job/123130412371) | [lab04-Windows-106](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/artifacts/12855258313) |
+| macOS | [SUCCESS](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/job/123130412697) | [lab04-macOS-106](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390/artifacts/12855786669) |
+
+Доступні всі 12 JAR-артефактів. Чисте клонування тега v1.3.0 пройшло
+clean verify: 186 тестів без failures/errors/skipped, SpotBugs без зауважень.
+JAR із чистого клонування та завантажений lab04-Linux-106 запущено окремо:
+перевірені help/version, результати --queries, поєднання з --danger,
+порожній вхід і побайтова незмінність стандартного файла. Завантажений
+JAR показує `lab04 1.3.0 (build 106)`. Локальна перевірка артефакта виконана
+на Linux; Windows/macOS підтверджуються відповідними завданнями CI.
+Перевірено 29.10.2026. Документаційні посилання додані після релізу;
+тег коду залишається на початковому коміті й не переміщується.
+
 ## 12. GitHub Issues і Pull Request
 
 Окрема гілка lab04 створена від main. Готові етапи комітилися й перевірялися
@@ -361,7 +384,7 @@ CI виконує clean verify всіх чотирьох модулів, Javadoc
 
 | Issue | Зміна | Перевірка / стан |
 | --- | --- | --- |
-| [#53](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/53) | Загальна задача | Відкрита до фінальної здачі |
+| [#53](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/53) | Загальна задача | [PR #65](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/65), реліз v1.3.0 перевірено |
 | [#54](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/54) | Окремий модуль і CI | [31d0d61](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/31d0d61), закрита |
 | [#55](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/55) | LocalDate та дані | [10cdac6](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/10cdac6), закрита |
 | [#56](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/56), [#57](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/57), [#58](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/58) | Filter, map, groupingBy | [1937d40](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/1937d40), закриті |
@@ -369,7 +392,7 @@ CI виконує clean verify всіх чотирьох модулів, Javadoc
 | [#60](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/60) | Top-N | [d3d7fa8](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/d3d7fa8), закрита |
 | [#61](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/61) | Optional-пошук | [89b8c78](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/89b8c78), закрита |
 | [#62](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/62), [#63](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/63) | Тести та зірочка | [42c9e89](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/42c9e89), закриті |
-| [#64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/64) | Демонстрація, документація та реліз | [20e3079](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/commit/20e3079), відкрита |
+| [#64](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/64) | Демонстрація, документація та реліз | [PR #65](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/pull/65), [CI тега](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390) |
 
 ## 13. Порівняння реалізацій і читабельності
 
