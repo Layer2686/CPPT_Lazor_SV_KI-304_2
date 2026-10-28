@@ -2,6 +2,8 @@ package ua.lpnu.kzp.lab04;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 /**
  * Одне незмінне й перевірене вимірювання метеостанції.
@@ -9,7 +11,7 @@ import java.util.Objects;
  */
 public abstract sealed class WeatherReading permits DailyReading, StormReading
 {
-    private final String date;
+    private final LocalDate date;
     private final TemperatureHumidity temperatureHumidity;
     private final double pressure;
     private final double wind;
@@ -17,7 +19,7 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading
     /**
      * Створює вимірювання після перевірки всіх полів.
      *
-     * @param date текстова дата YYYY-MM-DD; календарний розбір не виконується
+     * @param date текстова дата YYYY-MM-DD; перевіряється календарна коректність
      * @param temperature скінченна температура, °C
      * @param humidity вологість від 0 до 100, %
      * @param pressure додатний скінченний тиск, гПа
@@ -33,7 +35,14 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading
         {
             throw new IllegalArgumentException("Дата задана неправильно");
         }
-        this.date = date.trim();
+        try
+        {
+            this.date = LocalDate.parse(date.trim());
+        }
+        catch (DateTimeParseException e)
+        {
+            throw new IllegalArgumentException("Дата задана неправильно", e);
+        }
     }
     /** Повертає навчальний індекс небезпеки.
      * @return індекс, обчислений конкретним підтипом
@@ -116,11 +125,11 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading
     }
 
     /**
-     * Повертає дата вимірювання у форматі YYYY-MM-DD.
+     * Повертає календарну дату вимірювання.
      *
-     * @return дата вимірювання у форматі YYYY-MM-DD
+     * @return календарна дата вимірювання
      */
-    public String getDate()
+    public LocalDate getDate()
     {
         return date;
     }

@@ -1,5 +1,7 @@
 package ua.lpnu.kzp.lab04;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +64,7 @@ class WeatherSubtypeTest
 
         assertInstanceOf(DailyReading.class, daily);
         assertInstanceOf(StormReading.class, storm);
-        assertEquals("2026-09-02", storm.getDate());
+        assertEquals(LocalDate.parse("2026-09-02"), storm.getDate());
         assertEquals(-5.5, storm.getTemperature(), 0.0001);
         assertEquals(80, storm.getHumidity(), 0.0001);
         assertEquals(1008, storm.getPressure(), 0.0001);

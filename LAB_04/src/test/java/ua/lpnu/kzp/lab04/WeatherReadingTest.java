@@ -1,5 +1,7 @@
 package ua.lpnu.kzp.lab04;
 
+import java.time.LocalDate;
+
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,7 @@ class WeatherReadingTest
     {
         WeatherReading reading = new DailyReading("2026-09-01", -5.5, 70, 1013, 3.2);
 
-        assertEquals("2026-09-01", reading.getDate());
+        assertEquals(LocalDate.parse("2026-09-01"), reading.getDate());
         assertEquals(-5.5, reading.getTemperature(), 0.0001);
         assertEquals(70, reading.getHumidity(), 0.0001);
         assertEquals(1013, reading.getPressure(), 0.0001);
@@ -35,6 +37,33 @@ class WeatherReadingTest
                 () -> new DailyReading("   ", 1, 50, 1000, 2));
         assertThrows(IllegalArgumentException.class,
                 () -> new DailyReading("2026/09/01", 1, 50, 1000, 2));
+    }
+
+    @Test
+    void constructorsValidateCalendarAndAcceptLeapDay()
+    {
+        WeatherReading leapDay = new DailyReading(" 2024-02-29 ", 1, 50, 1000, 2);
+        assertEquals(LocalDate.of(2024, 2, 29), leapDay.getDate());
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new DailyReading("2026-02-29", 1, 50, 1000, 2));
+        assertEquals("Дата задана неправильно", error.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> new StormReading("2026-04-31", 1, 50, 1000, 20));
+    }
+
+    @Test
+    void csvAndBuilderUseTheSameCalendarValidation()
+    {
+        WeatherReading leapDay = WeatherReading.fromCsv("2024-02-29;1;50;1000;20");
+        assertEquals(LocalDate.of(2024, 2, 29), leapDay.getDate());
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> WeatherReading.fromCsv("2026-02-31;1;50;1000;20"));
+        assertEquals("Дата задана неправильно", error.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> WeatherReading.builder().date("2026-13-01")
+                        .temperature(1).humidity(50).pressure(1000).wind(2).build());
     }
 
     @Test
@@ -90,7 +119,7 @@ class WeatherReadingTest
     {
         WeatherReading reading = WeatherReading.fromCsv(" 2026-09-01 ; -5.5 ; 70 ; 1013 ; 3.2 ");
 
-        assertEquals("2026-09-01", reading.getDate());
+        assertEquals(LocalDate.parse("2026-09-01"), reading.getDate());
         assertEquals(-5.5, reading.getTemperature(), 0.0001);
         assertEquals(70, reading.getHumidity(), 0.0001);
         assertEquals(1013, reading.getPressure(), 0.0001);
@@ -171,7 +200,7 @@ class WeatherReadingTest
 
         assertEquals(70, first.getHumidity(), 0.0001);
         assertEquals(80, second.getHumidity(), 0.0001);
-        assertEquals("2026-09-01", first.getDate());
+        assertEquals(LocalDate.parse("2026-09-01"), first.getDate());
     }
 
     @Test
