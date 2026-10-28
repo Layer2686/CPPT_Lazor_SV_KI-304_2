@@ -2,6 +2,7 @@ package ua.lpnu.kzp.lab04;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.DoubleSummaryStatistics;
 
 /** Обчислює чотири показники за списком перевірених об’єктів і формує звіт. */
 public final class WeatherReport
@@ -20,24 +21,11 @@ public final class WeatherReport
      */
     public static String format(List<WeatherReading> readings, List<String> errors)
     {
-        double minTemperature = 0;
-        double humiditySum = 0;
-        double maxWind = 0;
-        int validCount = 0;
-        for (WeatherReading reading : readings)
-        {
-            TemperatureHumidity values = reading.getTemperatureHumidity();
-            if (validCount == 0 || values.temperature() < minTemperature)
-            {
-                minTemperature = values.temperature();
-            }
-            humiditySum += values.humidity();
-            if (validCount == 0 || reading.getWind() > maxWind)
-            {
-                maxWind = reading.getWind();
-            }
-            validCount++;
-        }
+        DoubleSummaryStatistics temperatureStats = WeatherQueries.temperatureStatistics(readings);
+        double minTemperature = temperatureStats.getMin();
+        long validCount = temperatureStats.getCount();
+        double humiditySum = readings.stream().mapToDouble(reading -> reading.getHumidity()).sum();
+        double maxWind = readings.stream().mapToDouble(reading -> reading.getWind()).max().orElse(0);
         String reportText;
         if (validCount > 0)
         {
@@ -59,6 +47,7 @@ public final class WeatherReport
             reportText += "Помилки: " + System.lineSeparator() + String.join(System.lineSeparator(), errors) + System.lineSeparator();
         }
         return reportText;
+
     }
     /**
      * Знаходить найбільший індекс через спільний контракт вимірювань.
@@ -67,16 +56,7 @@ public final class WeatherReport
      */
     public static double maxDangerIndex(List<WeatherReading> readings)
     {
-        double maxIndex = 0;
-        for (WeatherReading reading : readings)
-        {
-            double currentIndex = reading.dangerIndex();
-            if (currentIndex > maxIndex)
-            {
-                maxIndex = currentIndex;
-            }
-        }
-        return maxIndex;
+        return readings.stream().mapToDouble(reading -> reading.dangerIndex()).max().orElse(0);
     }
     /**
      * Демонструє вичерпний pattern switch для дозволених підтипів.

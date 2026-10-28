@@ -3,6 +3,7 @@ package ua.lpnu.kzp.lab04;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +70,34 @@ class WeatherQueriesTest
     }
 
     @Test
+    void summarizesTemperaturesIncludingNegativeAndRepeatedValues()
+    {
+        WeatherReading cold = new DailyReading("2026-09-01", -5, 70, 1013, 7.5);
+        WeatherReading warm = new StormReading("2026-09-02", 20, 70, 1013, 20);
+
+        DoubleSummaryStatistics result = WeatherQueries.temperatureStatistics(
+                List.of(cold, warm, warm));
+
+        assertEquals(3, result.getCount());
+        assertEquals(35, result.getSum(), 0.0001);
+        assertEquals(-5, result.getMin(), 0.0001);
+        assertEquals(20, result.getMax(), 0.0001);
+        assertEquals(35.0 / 3, result.getAverage(), 0.0001);
+    }
+
+    @Test
+    void emptyTemperatureStatisticsExposeNoMeasurements()
+    {
+        DoubleSummaryStatistics result = WeatherQueries.temperatureStatistics(List.of());
+
+        assertEquals(0, result.getCount());
+        assertEquals(0, result.getSum());
+        assertEquals(0, result.getAverage());
+        assertEquals(Double.POSITIVE_INFINITY, result.getMin());
+        assertEquals(Double.NEGATIVE_INFINITY, result.getMax());
+    }
+
+    @Test
     void queriesDoNotChangeInputContentsOrOrder()
     {
         List<WeatherReading> readings = new ArrayList<>(List.of(
@@ -79,6 +108,7 @@ class WeatherQueriesTest
         WeatherQueries.filterByWind(readings, 15);
         WeatherQueries.dates(readings);
         WeatherQueries.averageTemperatureByMonth(readings);
+        WeatherQueries.temperatureStatistics(readings);
 
         assertEquals(before, readings);
     }

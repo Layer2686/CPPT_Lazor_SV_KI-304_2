@@ -5,6 +5,7 @@ import java.util.List;
 import java.time.YearMonth;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.DoubleSummaryStatistics;
 
 /** Потокові запити до вимірювань без зміни вхідного списку. */
 public final class WeatherQueries
@@ -45,10 +46,22 @@ public final class WeatherQueries
      */
     public static Map<YearMonth, Double> averageTemperatureByMonth(List<WeatherReading> readings)
     {
-        return readings.stream()
-            .collect(Collectors.groupingBy(
+        return readings.stream().collect(Collectors.groupingBy
+            (
                 reading -> YearMonth.from(reading.getDate()),
                 Collectors.averagingDouble(reading -> reading.getTemperature())
             ));
+    }
+
+    /**
+     * Обчислює кількість, суму, мінімум, максимум і середнє температур усіх записів.
+     *
+     * @param readings початковий список коректних вимірювань
+     * @return статистика температур; для порожнього входу count, sum і average — 0,
+     *         min — +Infinity, max — -Infinity; перед виводом слід перевірити count
+     */
+    public static DoubleSummaryStatistics temperatureStatistics(List<WeatherReading> readings)
+    {
+        return readings.stream().collect(Collectors.summarizingDouble(reading -> reading.getTemperature()));
     }
 }
