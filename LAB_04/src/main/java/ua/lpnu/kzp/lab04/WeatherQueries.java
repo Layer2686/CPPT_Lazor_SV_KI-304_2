@@ -98,4 +98,21 @@ public final class WeatherQueries
     {
         return readings.stream().filter(reading -> reading.getDate().equals(requestedDate)).findFirst();
     }
+
+    /**
+     * Групує температури спочатку за місяцем, потім за категорією вимірювання.
+     *
+     * @param readings початковий список коректних вимірювань
+     * @return середні температури за місяцями та категоріями; порожні групи відсутні,
+     *         порядок ключів не визначений
+     */
+    public static Map<YearMonth, Map<WeatherKind, Double>> averageTemperatureByMonthAndKind(List<WeatherReading> readings)
+    {
+        return readings.stream().collect(Collectors.groupingBy
+            (
+                reading -> YearMonth.from(reading.getDate()),
+                Collectors.groupingBy(reading -> reading.getKind(), Collectors.averagingDouble(reading -> reading.getTemperature()))
+            ));
+
+    }
 }

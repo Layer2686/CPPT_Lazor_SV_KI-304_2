@@ -162,6 +162,32 @@ class WeatherQueriesTest
     }
 
     @Test
+    void groupsMonthlyTemperaturesByKindWithoutMixingYearsOrRepeatedRecords()
+    {
+        WeatherReading daily = new DailyReading("2026-09-01", 10, 70, 1013, 2);
+        WeatherReading storm = new StormReading("2026-09-02", 20, 70, 1013, 20);
+        WeatherReading colderStorm = new StormReading("2026-09-03", 8, 70, 1013, 15);
+        WeatherReading october = new DailyReading("2026-10-01", -5, 70, 1013, 2);
+        WeatherReading nextYear = new StormReading("2027-09-01", 30, 70, 1013, 20);
+
+        Map<YearMonth, Map<WeatherKind, Double>> result =
+                WeatherQueries.averageTemperatureByMonthAndKind(
+                        List.of(daily, storm, storm, colderStorm, october, nextYear));
+
+        assertEquals(3, result.size());
+        assertEquals(Map.of(WeatherKind.DAILY, 10.0, WeatherKind.STORM, 16.0),
+                result.get(YearMonth.of(2026, 9)));
+        assertEquals(Map.of(WeatherKind.DAILY, -5.0), result.get(YearMonth.of(2026, 10)));
+        assertEquals(Map.of(WeatherKind.STORM, 30.0), result.get(YearMonth.of(2027, 9)));
+    }
+
+    @Test
+    void nestedMonthlyGroupingHandlesEmptyInput()
+    {
+        assertEquals(Map.of(), WeatherQueries.averageTemperatureByMonthAndKind(List.of()));
+    }
+
+    @Test
     void queriesDoNotChangeInputContentsOrOrder()
     {
         List<WeatherReading> readings = new ArrayList<>(List.of(
@@ -175,6 +201,7 @@ class WeatherQueriesTest
         WeatherQueries.temperatureStatistics(readings);
         WeatherQueries.topByTemperature(readings, 1);
         WeatherQueries.findByDate(readings, LocalDate.of(2026, 9, 1));
+        WeatherQueries.averageTemperatureByMonthAndKind(readings);
 
         assertEquals(before, readings);
     }
