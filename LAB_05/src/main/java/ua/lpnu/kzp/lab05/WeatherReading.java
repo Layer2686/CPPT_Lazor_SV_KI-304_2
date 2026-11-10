@@ -213,7 +213,8 @@ public abstract sealed class WeatherReading permits DailyReading, StormReading
             return false;
         }
         WeatherReading reading = (WeatherReading)other;
-        return date.equals(reading.date) && temperatureHumidity.equals(reading.temperatureHumidity) && Double.compare(wind, reading.wind) == 0 && Double.compare(pressure, reading.pressure) == 0;
+        return date.equals(reading.date) && temperatureHumidity.equals(reading.temperatureHumidity)
+            && Double.compare(wind, reading.wind) == 0 && Double.compare(pressure, reading.pressure) == 0;
     }
     /**
      * Обчислює хеш за тими самими даними, які використовує equals.
