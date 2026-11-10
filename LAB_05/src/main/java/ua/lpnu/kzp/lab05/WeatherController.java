@@ -44,7 +44,7 @@ public final class WeatherController
             return;
         }
 
-        List<WeatherReading> readings = new ArrayList<>();
+        Repository<WeatherReading> repository = new Repository<>();
         List<String> errors = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++)
         {
@@ -52,9 +52,10 @@ public final class WeatherController
             try
             {
                 WeatherReading reading = WeatherReading.fromCsv(line);
-                readings.add(reading);
+                repository.add(reading);
                 // Збережено консольне представлення записів із LAB_01.
-                System.out.println("Рядок " + (i + 1) + ": дата " + reading.getDate() + ", температура " + reading.getTemperature() + " °C, вологість " + reading.getHumidity() + " %, тиск " + reading.getPressure() + " гПа, вітер " + reading.getWind() + " м/с");
+                System.out.println("Рядок " + (i + 1) + ": дата " + reading.getDate() + ", температура " + reading.getTemperature()
+                    + " °C, вологість " + reading.getHumidity() + " %, тиск " + reading.getPressure() + " гПа, вітер " + reading.getWind() + " м/с");
             }
             catch (IllegalArgumentException e)
             {
@@ -70,6 +71,7 @@ public final class WeatherController
                 }
             }
         }
+        List<WeatherReading> readings = repository.all();
         String reportText = WeatherReport.format(readings, errors);
         System.out.print(reportText);
         if (options.danger())
