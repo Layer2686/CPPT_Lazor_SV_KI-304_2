@@ -8,11 +8,13 @@
 | [LAB_02](LAB_02) | Класи, record, контролер, парсер параметрів і builder | 1.1.1 | [Запуск №2](LAB_02/README.md), [звіт №2](LAB_02/REPORT.md) |
 | [LAB_03](LAB_03) | Підтипи, enum, рівність та консольний аналіз --danger | 1.2.0 | [Запуск №3](LAB_03/README.md), [звіт №3](LAB_03/REPORT.md), [план №3](LAB_03/PLAN.md) |
 | [LAB_04](LAB_04) | Stream API, Optional, групування та консольний --queries | 1.3.0 | [Запуск №4](LAB_04/README.md), [план №4](LAB_04/PLAN.md) |
+| [LAB_05](LAB_05) | Підготовча основа №4; сховище й експорт ще в роботі | 1.4.0-SNAPSHOT | [Запуск №5](LAB_05/README.md), [план №5](LAB_05/PLAN.md) |
 
-`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі чотири модулі в гілці lab04.
+`./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`) перевіряє всі п’ять модулів у гілці lab05.
+Окрема перевірка п’ятої: `./mvnw -B -pl LAB_05 -am verify`.
 Окрема перевірка четвертої: `./mvnw -B -pl LAB_04 -am verify`.
 Окрема перевірка третьої роботи: `./mvnw -B -pl LAB_03 -am verify`.
-Команди нижче демонструють LAB_01; окремі команди LAB_02–LAB_04 — у таблиці.
+Команди нижче демонструють LAB_01; окремі команди LAB_02–LAB_05 — у таблиці.
 Для аналізу індексів у LAB_03/LAB_04 використовуйте `--danger`.
 У LAB_04 прапорець `--queries` показує п’ять запитів, пошук і дворівневе групування.
 Фінальна версія №4: [v1.3.0](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/tree/v1.3.0), [CI тега й артефакти](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions/runs/40777482390).

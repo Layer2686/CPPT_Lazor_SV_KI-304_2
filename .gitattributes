@@ -8,3 +8,4 @@
 
 # Preserve exact legacy output, including the space after "Помилки:".
 LAB_04/src/test/resources/baseline/*.txt whitespace=-blank-at-eol
+LAB_05/src/test/resources/baseline/*.txt whitespace=-blank-at-eol
