@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $reports = @{}
 $consoles = @{}
 
-foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04')) {
+foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04', 'lab05')) {
     $module = $name.ToUpperInvariant().Replace('LAB', 'LAB_')
     $jarPath = (Resolve-Path -LiteralPath "$module/target/$name.jar").Path
     $inputPath = (Resolve-Path -LiteralPath "$module/data/input.csv").Path
@@ -29,9 +29,9 @@ foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04')) {
     }
     Write-Output "Version check passed: $expectedVersion"
 
-    if ($name -eq 'lab04' -and $env:GITHUB_REF_TYPE -eq 'tag') {
+    if ($name -eq 'lab05' -and $env:GITHUB_REF_TYPE -eq 'tag') {
         if ($env:GITHUB_REF_NAME -cne "v$version") {
-            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_04 version '$version'"
+            throw "Tag '$env:GITHUB_REF_NAME' differs from LAB_05 version '$version'"
         }
     }
 
@@ -53,11 +53,11 @@ foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04')) {
     }
     Write-Output "Help check passed: $name"
 
-    if ($name -in @('lab03', 'lab04') -and $help -cnotcontains '--danger        показати додатковий аналіз небезпеки') {
+    if ($name -in @('lab03', 'lab04', 'lab05') -and $help -cnotcontains '--danger        показати додатковий аналіз небезпеки') {
         throw "$module help does not describe --danger"
     }
-    if ($name -eq 'lab04' -and $help -cnotcontains '--queries       показати результати потокових запитів') {
-        throw 'LAB_04 help does not describe --queries'
+    if ($name -in @('lab04', 'lab05') -and $help -cnotcontains '--queries       показати результати потокових запитів') {
+        throw "$module help does not describe --queries"
     }
 
     # Файл без батьківського каталогу перевіряється з тимчасової робочої папки.
@@ -93,15 +93,15 @@ foreach ($name in @('lab01', 'lab02', 'lab03', 'lab04')) {
     Write-Output "JAR check passed: $name; UTF-8 report.txt without a parent directory."
 }
 
-foreach ($name in @('lab02', 'lab03', 'lab04')) {
+foreach ($name in @('lab02', 'lab03', 'lab04', 'lab05')) {
     if ($reports['lab01'] -cne $reports[$name] -or $consoles['lab01'] -cne $consoles[$name]) {
         throw "LAB_01 and $name produce different results for the reference CSV"
     }
 }
-Write-Output 'Compatibility check passed: LAB_01, LAB_02, LAB_03 and LAB_04 console/file reports are identical.'
+Write-Output 'Compatibility check passed: LAB_01, LAB_02, LAB_03, LAB_04 and LAB_05 console/file reports are identical.'
 
 # Новий режим перевіряється окремо; старі лабораторні не мають цього ключа.
-foreach ($dangerName in @('lab03', 'lab04')) {
+foreach ($dangerName in @('lab03', 'lab04', 'lab05')) {
     $dangerModule = $dangerName.ToUpperInvariant().Replace('LAB', 'LAB_')
     $dangerJar = (Resolve-Path -LiteralPath "$dangerModule/target/$dangerName.jar").Path
     $dangerInput = (Resolve-Path -LiteralPath "$dangerModule/data/danger-example.csv").Path
@@ -137,33 +137,36 @@ foreach ($dangerName in @('lab03', 'lab04')) {
 }
 
 # Перевірка нового режиму на реальному JAR і спільному демонстраційному CSV.
-$queriesJar = (Resolve-Path -LiteralPath 'LAB_04/target/lab04.jar').Path
-$queriesInput = (Resolve-Path -LiteralPath 'LAB_04/data/queries-example.csv').Path
-$queriesFile = Join-Path $env:RUNNER_TEMP 'lab04-queries/report.txt'
-$queriesPlain = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --input $queriesInput --output $queriesFile)
-if ($LASTEXITCODE -ne 0) { throw 'LAB_04 queries baseline command failed' }
-$queriesPlainFile = Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8
-$queriesOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --queries --input $queriesInput --output $queriesFile)
-if ($LASTEXITCODE -ne 0) { throw 'LAB_04 --queries command failed' }
-foreach ($line in @(
-    'Результати потокових запитів:'
-    'Дати: [2026-09-01, 2026-09-02, 2026-09-03, 2026-10-01, 2026-10-02, 2026-10-03, 2026-09-02]'
-    'Кількість: 7, сума: 90.00, мінімум: -5.00, максимум: 25.00, середнє: 12.86'
-    'Вимірювання з вітром понад 15 м/с:'
-    'Top-5 за температурою:'
-    '2026-09: 18.00 °C'
-    '2026-10: 6.00 °C'
-    'Пошук за датою 2026-09-02: 2026-09-02: 25.00 °C, 60.00 %, 1010.00 гПа, 15.00 м/с'
-    'Пошук за датою 2026-12-31: Не знайдено'
-    'Середня температура за місяцями та категоріями:'
-    '    STORM: 20.67 °C'
-)) {
-    if ($queriesOutput -cnotcontains $line) { throw "LAB_04 query result is missing: $line" }
+foreach ($queriesName in @('lab04', 'lab05')) {
+    $queriesModule = $queriesName.ToUpperInvariant().Replace('LAB', 'LAB_')
+    $queriesJar = (Resolve-Path -LiteralPath "$queriesModule/target/$queriesName.jar").Path
+    $queriesInput = (Resolve-Path -LiteralPath "$queriesModule/data/queries-example.csv").Path
+    $queriesFile = Join-Path $env:RUNNER_TEMP "$queriesName-queries/report.txt"
+    $queriesPlain = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --input $queriesInput --output $queriesFile)
+    if ($LASTEXITCODE -ne 0) { throw "$queriesModule queries baseline command failed" }
+    $queriesPlainFile = Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8
+    $queriesOutput = @(& java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $queriesJar --queries --input $queriesInput --output $queriesFile)
+    if ($LASTEXITCODE -ne 0) { throw "$queriesModule --queries command failed" }
+    foreach ($line in @(
+        'Результати потокових запитів:'
+        'Дати: [2026-09-01, 2026-09-02, 2026-09-03, 2026-10-01, 2026-10-02, 2026-10-03, 2026-09-02]'
+        'Кількість: 7, сума: 90.00, мінімум: -5.00, максимум: 25.00, середнє: 12.86'
+        'Вимірювання з вітром понад 15 м/с:'
+        'Top-5 за температурою:'
+        '2026-09: 18.00 °C'
+        '2026-10: 6.00 °C'
+        'Пошук за датою 2026-09-02: 2026-09-02: 25.00 °C, 60.00 %, 1010.00 гПа, 15.00 м/с'
+        'Пошук за датою 2026-12-31: Не знайдено'
+        'Середня температура за місяцями та категоріями:'
+        '    STORM: 20.67 °C'
+    )) {
+        if ($queriesOutput -cnotcontains $line) { throw "$queriesModule query result is missing: $line" }
+    }
+    $plainQueriesText = ($queriesPlain -join [Environment]::NewLine) + [Environment]::NewLine
+    $queriesText = ($queriesOutput -join [Environment]::NewLine) + [Environment]::NewLine
+    if (-not $queriesText.StartsWith($plainQueriesText) -or
+        $queriesPlainFile -cne (Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8)) {
+        throw "$queriesModule --queries changed the standard console/file report"
+    }
+    Write-Output 'Queries CLI check passed: all queries and unchanged UTF-8 file.'
 }
-$plainQueriesText = ($queriesPlain -join [Environment]::NewLine) + [Environment]::NewLine
-$queriesText = ($queriesOutput -join [Environment]::NewLine) + [Environment]::NewLine
-if (-not $queriesText.StartsWith($plainQueriesText) -or
-    $queriesPlainFile -cne (Get-Content -LiteralPath $queriesFile -Raw -Encoding utf8)) {
-    throw 'LAB_04 --queries changed the standard console/file report'
-}
-Write-Output 'Queries CLI check passed: all queries and unchanged UTF-8 file.'

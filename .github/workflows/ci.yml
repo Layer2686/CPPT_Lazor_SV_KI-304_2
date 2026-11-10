@@ -40,6 +40,7 @@ jobs:
             LAB_02/pom.xml
             LAB_03/pom.xml
             LAB_04/pom.xml
+            LAB_05/pom.xml
             .mvn/wrapper/maven-wrapper.properties
 
       - name: Verify with Maven Wrapper (Unix)
@@ -109,4 +110,20 @@ jobs:
         with:
           name: lab04-${{ runner.os }}-${{ github.run_number }}
           path: LAB_04/target/lab04.jar
+          if-no-files-found: error
+
+      - name: Generate LAB_05 Javadoc
+        shell: pwsh
+        run: |
+          $sources = @(Get-ChildItem 'LAB_05/src/main/java' -Recurse -Filter '*.java' | ForEach-Object { $_.FullName })
+          & javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_05/target/apidocs @sources
+          if ($LASTEXITCODE -ne 0) {
+            throw "Javadoc exited with code $LASTEXITCODE"
+          }
+
+      - name: Upload LAB_05 executable JAR
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lab05-${{ runner.os }}-${{ github.run_number }}
+          path: LAB_05/target/lab05.jar
           if-no-files-found: error
