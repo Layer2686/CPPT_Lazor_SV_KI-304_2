@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.nio.file.Path;
 
 /** Керує обробкою: файли → вимірювання → звіт → консоль і файл. */
 public final class WeatherController
@@ -33,45 +34,35 @@ public final class WeatherController
             ApplicationInfo.printVersion();
             return;
         }
-        List<String> lines;
+        List<String> errors = new ArrayList<>();
+        List<WeatherReading> readings;
         try
         {
-            lines = files.read(options.inputPath());
+            StorageWorkflow.validatePaths(options);
+            if (options.importCsvPath() == null)
+            {
+                readings = readLegacy(options.inputPath(), errors);
+            }
+            else
+            {
+                readings = new WeatherCsvStorage().read(options.importCsvPath()).stream()
+                        .map(WeatherReadingRecord::toReading).toList();
+                for (int index = 0; index < readings.size(); index++)
+                {
+                    printReading(index + 1, readings.get(index));
+                }
+            }
         }
-        catch (IOException e)
+        catch (IOException exception)
         {
-            System.err.println("Не вдалося прочитати файл " + options.inputPath() + ": " + e.getMessage());
+            System.err.println("Не вдалося прочитати файл " + options.inputPath() + ": " + exception.getMessage());
             return;
         }
-
-        Repository<WeatherReading> repository = new Repository<>();
-        List<String> errors = new ArrayList<>();
-        for (int i = 0; i < lines.size(); i++)
+        catch (DataStorageException exception)
         {
-            String line = lines.get(i);
-            try
-            {
-                WeatherReading reading = WeatherReading.fromCsv(line);
-                repository.add(reading);
-                // Збережено консольне представлення записів із LAB_01.
-                System.out.println("Рядок " + (i + 1) + ": дата " + reading.getDate() + ", температура " + reading.getTemperature()
-                    + " °C, вологість " + reading.getHumidity() + " %, тиск " + reading.getPressure() + " гПа, вітер " + reading.getWind() + " м/с");
-            }
-            catch (IllegalArgumentException e)
-            {
-                if ("очікується 5 полів".equals(e.getMessage()))
-                {
-                    errors.add(String.format(Locale.ROOT,
-                            "Рядок %d: %s", i + 1, e.getMessage()));
-                }
-                else
-                {
-                    errors.add(String.format(Locale.ROOT,
-                            "Рядок %d: %s; вхід: %s", i + 1, e.getMessage(), line));
-                }
-            }
+            System.err.println(exception.getMessage());
+            return;
         }
-        List<WeatherReading> readings = repository.all();
         String reportText = WeatherReport.format(readings, errors);
         System.out.print(reportText);
         if (options.danger())
@@ -89,6 +80,53 @@ public final class WeatherController
         catch (IOException e)
         {
             System.err.println("Неможливо записати звіт " + options.outputPath() + ": " + e.getMessage());
+            return;
         }
+        try
+        {
+            new StorageWorkflow().run(readings, options);
+        }
+        catch (DataStorageException exception)
+        {
+            System.err.println(exception.getMessage());
+        }
+    }
+
+    private List<WeatherReading> readLegacy(Path inputPath, List<String> errors) throws IOException
+    {
+        List<String> lines = files.read(inputPath);
+
+        Repository<WeatherReading> repository = new Repository<>();
+        for (int i = 0; i < lines.size(); i++)
+        {
+            String line = lines.get(i);
+            try
+            {
+                WeatherReading reading = WeatherReading.fromCsv(line);
+                repository.add(reading);
+                printReading(i + 1, reading);
+            }
+            catch (IllegalArgumentException e)
+            {
+                if ("очікується 5 полів".equals(e.getMessage()))
+                {
+                    errors.add(String.format(Locale.ROOT,
+                            "Рядок %d: %s", i + 1, e.getMessage()));
+                }
+                else
+                {
+                    errors.add(String.format(Locale.ROOT,
+                            "Рядок %d: %s; вхід: %s", i + 1, e.getMessage(), line));
+                }
+            }
+        }
+        return repository.all();
+    }
+
+    private static void printReading(int number, WeatherReading reading)
+    {
+        System.out.println("Рядок " + number + ": дата " + reading.getDate() + ", температура " + reading.getTemperature()
+                + " °C, вологість " + reading.getHumidity() + " %, тиск " + reading.getPressure()
+                + " гПа, вітер " + reading.getWind() + " м/с");
     }
 }
