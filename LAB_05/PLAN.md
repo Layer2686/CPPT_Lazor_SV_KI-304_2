@@ -275,6 +275,6 @@ SpotBugs без зауважень. Javadoc-Werror проходить. Спра�
 
 CI додатково запускає check-storage.ps1: Unicode/LF, JSON через ConvertFrom-Json,
 повний CSV round-trip і незмінний звіт. До 15 JAR додаються три артефакти
-з CSV/JSON/звітами. Пояснення кожного нового компонента — CODE_GUIDE.md.
+з CSV/JSON/звітами.
 Фінальний REPORT з JSON/benchmark готується локально; його погодження й
 публікація лишаються невиконаним критерієм #78. Сам код завершений.

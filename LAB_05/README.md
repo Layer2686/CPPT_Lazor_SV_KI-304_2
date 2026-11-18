@@ -135,7 +135,6 @@ failures/errors/skipped — 0, SpotBugs без зауважень. Збереж�
 CI перевіряє всі модулі на Ubuntu/Windows/macOS, запускає JAR, парсить JSON,
 порівнює CSV й звіти та публікує JAR і згенеровані файли.
 
-- [Пояснення всієї реалізації](CODE_GUIDE.md).
 - [План і критерії](PLAN.md).
 - [Benchmark кешу](BENCHMARK.md).
 - [GitHub Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions).
