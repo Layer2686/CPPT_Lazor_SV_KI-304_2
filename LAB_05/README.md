@@ -136,6 +136,7 @@ CI перевіряє всі модулі на Ubuntu/Windows/macOS, запус�
 порівнює CSV й звіти та публікує JAR і згенеровані файли.
 
 - [План і критерії](PLAN.md).
+- [Звіт](REPORT.md).
 - [Benchmark кешу](BENCHMARK.md).
 - [GitHub Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions).
 
