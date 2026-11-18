@@ -113,6 +113,35 @@ class StorageCliTest
                 .err().contains("мають відрізнятися"));
     }
 
+    @Test
+    void newOutputsThroughDirectoryAliasAreRejectedBeforeWriting() throws Exception
+    {
+        Path real = Files.createDirectory(directory.resolve("real"));
+        Path alias = directory.resolve("alias");
+        try
+        {
+            Files.createSymbolicLink(alias, real);
+        }
+        catch (java.io.IOException | UnsupportedOperationException exception)
+        {
+            // Звичайний Windows-користувач може не мати права створення symlink.
+            if (!System.getProperty("os.name").startsWith("Windows"))
+            {
+                throw exception;
+            }
+            alias = real.resolve(".");
+        }
+        Path input = directory.resolve("input.csv");
+        Files.writeString(input, "2026-09-01;10;70;1013;7.5\n");
+        Path report = directory.resolve("report.txt");
+        Output output = run("--input", input.toString(), "--output", report.toString(),
+                "--export-csv", real.resolve("new/out").toString(),
+                "--export-json", alias.resolve("new/out").toString());
+        assertTrue(output.err().contains("мають відрізнятися"));
+        assertFalse(Files.exists(report));
+        assertFalse(Files.exists(real.resolve("new/out")));
+    }
+
     private static Output run(String... args)
     {
         PrintStream originalOut = System.out;

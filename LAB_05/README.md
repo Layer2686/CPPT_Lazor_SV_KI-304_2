@@ -128,9 +128,9 @@ DataStorageException зберігає контекст і cause технічно
 
 ## Перевірки, пояснення та Javadoc
 
-Локальний clean verify: 302 тести всіх модулів, з них 116 у LAB_05;
+Локальний clean verify: 303 тести всіх модулів, з них 117 у LAB_05;
 failures/errors/skipped — 0, SpotBugs без зауважень. Збережені 83 попередні
-тести LAB_05, додано 33 нові. Старі standard/danger/queries console/file
+тести LAB_05, додано 34 нові. Старі standard/danger/queries console/file
 перевіряються за [baseline](src/test/resources/baseline).
 CI перевіряє всі модулі на Ubuntu/Windows/macOS, запускає JAR, парсить JSON,
 порівнює CSV й звіти та публікує JAR і згенеровані файли.

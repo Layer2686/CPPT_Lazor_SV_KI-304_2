@@ -3,6 +3,7 @@ package ua.lpnu.kzp.lab05;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public final class StorageWorkflow
                 Path right = paths.get(second);
                 try
                 {
-                    if (left.toAbsolutePath().normalize().equals(right.toAbsolutePath().normalize())
+                    if (canonicalTarget(left).equals(canonicalTarget(right))
                             || Files.exists(left) && Files.exists(right) && Files.isSameFile(left, right))
                     {
                         throw new DataStorageException("Шляхи джерела та результатів мають відрізнятися: " + left);
@@ -90,4 +91,29 @@ public final class StorageWorkflow
             }
         }
     }
+
+    // Відсутній кінцевий файл не заважає розкрити symlink його наявного предка.
+    private static Path canonicalTarget(Path path) throws IOException
+    {
+        Path current = path.toAbsolutePath();
+        List<Path> missing = new ArrayList<>();
+        while (!Files.exists(current, LinkOption.NOFOLLOW_LINKS))
+        {
+            Path name = current.getFileName();
+            Path parent = current.getParent();
+            if (name == null || parent == null)
+            {
+                throw new IOException("Не знайдено доступного предка для " + path);
+            }
+            missing.add(name);
+            current = parent;
+        }
+        Path resolved = current.toRealPath();
+        for (int index = missing.size() - 1; index >= 0; index--)
+        {
+            resolved = resolved.resolve(missing.get(index));
+        }
+        return resolved.normalize();
+    }
+
 }
