@@ -3,7 +3,7 @@
 Команда з кореня після збірки:
 
 ```sh
-java -cp LAB_05/target/lab05.jar ua.lpnu.kzp.lab05.ExportBenchmark
+java -cp LAB_05/target/lab05.jar lab05.ExportBenchmark
 ```
 
 Виконано 18.11.2026 на Linux. Повний CSV-експорт включає формування тексту,

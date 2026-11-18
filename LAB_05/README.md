@@ -1,7 +1,9 @@
 # Лабораторна №5 — сховище та експорт метеоданих
 
 Варіант 18, Java 21, Maven 3.9.9 Wrapper, версія **1.4.0**.
-Окремий модуль LAB_05; LAB_01–LAB_04 запускаються незалежно.
+Окремий модуль LAB_05 із пакетом `lab05`. LAB_01–LAB_04 запускаються незалежно.
+Звіт описує реліз `v1.4.0`, у якому використовувався пакет `ua.lpnu.kzp.lab05`.
+Команди нижче відповідають поточній структурі.
 
 Реалізовано Repository<T>, власний виняток, @CsvColumn, універсальні CSV/JSON
 експортери, документний CSV-парсер, імпорт і round-trip. Зірочка: спільний
@@ -143,7 +145,7 @@ CI перевіряє всі модулі на Ubuntu/Windows/macOS, запус�
 Linux/macOS:
 
 ```sh
-javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_05/target/apidocs LAB_05/src/main/java/ua/lpnu/kzp/lab05/*.java
+javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_05/target/apidocs LAB_05/src/main/java/lab05/*.java
 ```
 
 PowerShell:
