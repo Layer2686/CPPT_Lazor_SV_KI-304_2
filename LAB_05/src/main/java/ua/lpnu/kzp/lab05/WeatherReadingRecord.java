@@ -1,6 +1,8 @@
 package ua.lpnu.kzp.lab05;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.List;
+import java.time.DateTimeException;
 
 /**
  * Незмінне плоске представлення вимірювання для зберігання.
@@ -123,4 +125,87 @@ public final class WeatherReadingRecord
     {
         return new WeatherReadingRecord(reading.getDate(), reading.getTemperature(), reading.getHumidity(), reading.getPressure(), reading.getWind());
     }
+
+    /**
+     * Повертає CSV-заголовок у порядку Java-імен анотованих полів.
+     * @return незмінний список п’яти назв
+     */
+    public static List<String> csvHeader()
+    {
+        return List.of("дата", "вологість", "тиск", "температура", "вітер");
+    }
+
+    /**
+     * Відновлює запис із клітинок нового CSV у порядку date/humidity/pressure/temperature/wind.
+     * @param fields п’ять клітинок
+     * @return перевірений запис
+     * @throws DataStorageException якщо кількість, значення або інваріанти порушені
+     */
+    public static WeatherReadingRecord fromFields(List<String> fields) throws DataStorageException
+    {
+        if (fields == null || fields.size() != 5 || fields.stream().anyMatch(Objects::isNull))
+        {
+            throw new DataStorageException("Очікується 5 непорожніх посилань на CSV-поля");
+        }
+        LocalDate parsedDate;
+        try
+        {
+            parsedDate = LocalDate.parse(fields.get(0));
+        }
+        catch (DateTimeException exception)
+        {
+            throw new DataStorageException("Некоректне поле дата: " + fields.get(0), exception);
+        }
+        double parsedHumidity = parseNumber(fields.get(1), "вологість");
+        double parsedPressure = parseNumber(fields.get(2), "тиск");
+        double parsedTemperature = parseNumber(fields.get(3), "температура");
+        double parsedWind = parseNumber(fields.get(4), "вітер");
+        try
+        {
+            return new WeatherReadingRecord(parsedDate, parsedTemperature, parsedHumidity, parsedPressure, parsedWind);
+        }
+        catch (IllegalArgumentException exception)
+        {
+            throw new DataStorageException("Некоректне вимірювання: " + exception.getMessage(), exception);
+        }
+    }
+
+    /**
+     * Відновлює один CSV-запис без заголовка, включно з quoted-полями.
+     * @param csv текст одного логічного запису
+     * @return відновлене вимірювання
+     * @throws DataStorageException якщо синтаксис або значення неправильні
+     */
+    public static WeatherReadingRecord fromCsv(String csv) throws DataStorageException
+    {
+        List<List<String>> rows = CsvParser.parseDocument(csv);
+        if (rows.size() != 1)
+        {
+            throw new DataStorageException("Очікується один CSV-запис без заголовка");
+        }
+        return fromFields(rows.get(0));
+    }
+
+    /**
+     * Повертає вимірювання попередньої поліморфної моделі через її фабрику.
+     * @return звичайний або штормовий підтип за швидкістю вітру
+     */
+    public WeatherReading toReading()
+    {
+        return WeatherReading.builder().date(date.toString()).temperature(temperature)
+                .humidity(humidity).pressure(pressure).wind(wind).build();
+    }
+
+    private static double parseNumber(String value, String name) throws DataStorageException
+    {
+        try
+        {
+            return Double.parseDouble(value);
+        }
+        catch (NumberFormatException exception)
+        {
+            throw new DataStorageException("Некоректне число у полі " + name + ": " + value, exception);
+        }
+    }
+
 }
