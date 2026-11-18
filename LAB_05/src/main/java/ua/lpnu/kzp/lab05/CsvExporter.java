@@ -1,23 +1,31 @@
 package ua.lpnu.kzp.lab05;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.nio.file.Path;
-import java.lang.reflect.InaccessibleObjectException;
 /**
  * Універсальний CSV-експорт власних анотованих полів плоского класу.
  * @param <T> тип записів
  */
-public final class CsvExporter<T>
+public final class CsvExporter<T> implements Exporter<T>
 {
-    /** Створює експортер. */
+    private final boolean cacheEnabled;
+
+    /** Створює експортер із кешуванням метаданих. */
     public CsvExporter()
     {
+        this(true);
+    }
+
+    /**
+     * Дозволяє порівняти експорт із кешем і без нього.
+     * @param cacheEnabled чи використовувати кеш полів за класом
+     */
+    public CsvExporter(boolean cacheEnabled)
+    {
+        this.cacheEnabled = cacheEnabled;
     }
 
     /**
@@ -29,6 +37,7 @@ public final class CsvExporter<T>
      * @param records записи у порядку експорту
      * @throws DataStorageException якщо дані, доступ або запис некоректні
      */
+    @Override
     public void write(Path path, Class<T> recordType, List<? extends T> records) throws DataStorageException
     {
         String text = toCsv(recordType, records);
@@ -83,41 +92,9 @@ public final class CsvExporter<T>
 
     private List<Field> getColumns(Class<T> recordType) throws DataStorageException
     {
-        if (recordType == null)
-        {
-            throw new DataStorageException("Клас записів не може бути null");
-        }
-        Field[] fields;
-        try
-        {
-            fields = recordType.getDeclaredFields();
-        }
-        catch (SecurityException exception)
-        {
-            throw new DataStorageException("Немає доступу до класу: " + recordType.getName(), exception);
-        }
-        List<Field> columns = Arrays.stream(fields).filter(field -> field.isAnnotationPresent(CsvColumn.class))
-            .filter(field -> !Modifier.isStatic(field.getModifiers())).sorted(Comparator.comparing(Field::getName)).toList();
-        if (columns.isEmpty())
-        {
-            throw new DataStorageException("Клас не містить полів для CSV");
-        }
-        for (Field field : columns)
-        {
-            try
-            {
-                if (!field.trySetAccessible())
-                {
-                    throw new DataStorageException("Немає доступу до поля: " + field.getName());
-                }
-            }
-            catch (SecurityException | InaccessibleObjectException exception)
-            {
-                throw new DataStorageException("Немає доступу до поля: " + field.getName(), exception);
-            }
-        }
-        return columns;
+        return ColumnMetadata.columns(recordType, cacheEnabled);
     }
+
     private String escapeCsv(String value)
     {
         if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r"))
