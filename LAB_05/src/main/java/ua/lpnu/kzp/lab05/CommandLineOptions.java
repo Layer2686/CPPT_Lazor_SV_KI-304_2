@@ -3,21 +3,25 @@ package ua.lpnu.kzp.lab05;
 import java.nio.file.Path;
 
 /**
- * Параметри запуску після перевірки командного рядка.
- *
- * @param inputPath шлях до CSV
- * @param outputPath шлях до звіту
- * @param help чи потрібно показати лише довідку
- * @param version чи потрібно показати лише версію
- * @param danger чи потрібно показати додатковий аналіз небезпеки
- * @param queries чи потрібно показати результати потокових запитів
+ * Незмінні перевірені параметри запуску.
+ * @param inputPath старий CSV без заголовка з роздільником ;
+ * @param outputPath стандартний текстовий звіт
+ * @param help показати довідку
+ * @param version показати версію
+ * @param danger додатковий аналіз небезпеки
+ * @param queries потокові запити
+ * @param importCsvPath новий CSV із заголовком або null
+ * @param exportCsvPath призначення CSV або null
+ * @param exportJsonPath призначення JSON або null
+ * @param roundTrip порівняти початкові й повторно прочитані CSV-записи
  */
-public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version, boolean danger, boolean queries)
+public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version,
+        boolean danger, boolean queries, Path importCsvPath, Path exportCsvPath,
+        Path exportJsonPath, boolean roundTrip)
 {
     /**
-     * Перевіряє наявність шляхів і сумісність режимів.
-     *
-     * @throws IllegalArgumentException якщо шляху немає або вибрано обидва режими
+     * Перевіряє шляхи та сумісність режимів.
+     * @throws IllegalArgumentException якщо обов’язковий шлях відсутній або режими несумісні
      */
     public CommandLineOptions
     {
@@ -29,5 +33,24 @@ public record CommandLineOptions(Path inputPath, Path outputPath, boolean help, 
         {
             throw new IllegalArgumentException("Довідка та версія — окремі режими запуску");
         }
+        if (roundTrip && exportCsvPath == null)
+        {
+            throw new IllegalArgumentException("Для --round-trip потрібен --export-csv ШЛЯХ");
+        }
+    }
+
+    /**
+     * Зберігає шестипараметровий спосіб створення попередніх режимів.
+     * @param inputPath старий вхід
+     * @param outputPath текстовий звіт
+     * @param help довідка
+     * @param version версія
+     * @param danger аналіз небезпеки
+     * @param queries потокові запити
+     */
+    public CommandLineOptions(Path inputPath, Path outputPath, boolean help, boolean version,
+            boolean danger, boolean queries)
+    {
+        this(inputPath, outputPath, help, version, danger, queries, null, null, null, false);
     }
 }

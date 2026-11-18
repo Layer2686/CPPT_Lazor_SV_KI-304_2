@@ -57,6 +57,17 @@ jobs:
         shell: pwsh
         run: ./.github/scripts/check-jars.ps1 -BuildNumber '${{ github.run_number }}'
 
+      - name: Check LAB_05 storage using real JAR
+        shell: pwsh
+        run: ./.github/scripts/check-storage.ps1
+
+      - name: Upload LAB_05 generated storage examples
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lab05-storage-${{ runner.os }}-${{ github.run_number }}
+          path: LAB_05/target/ci-storage/*
+          if-no-files-found: error
+
       - name: Generate LAB_02 Javadoc
         shell: pwsh
         run: |

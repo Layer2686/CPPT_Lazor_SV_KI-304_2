@@ -1,108 +1,144 @@
-# Лабораторна №5 — сховище, винятки та CSV-експорт
+# Лабораторна №5 — сховище та експорт метеоданих
 
-Варіант 18 — метеостанція; Java 21, пакет ua.lpnu.kzp.lab05.
-Гілка lab05, версія **1.4.0-SNAPSHOT**.
+Варіант 18, Java 21, Maven 3.9.9 Wrapper, версія **1.4.0**.
+Окремий модуль LAB_05; LAB_01–LAB_04 запускаються незалежно.
 
-**Стан: сховище, модель з @CsvColumn, CSV-експорт, парсер та імпорт реалізовані.**
-JSON і кеш метаданих реалізовані. --danger та --queries успадковані й працюють.
-Зелений CI основи не означає готовності п’ятої лабораторної.
+Реалізовано Repository<T>, власний виняток, @CsvColumn, універсальні CSV/JSON
+експортери, документний CSV-парсер, імпорт і round-trip. Зірочка: спільний
+Exporter<T>, кеш полів і [вимірювання](BENCHMARK.md).
 
 ## Збірка
 
-Потрібні Git, JDK 21 та інтернет для першої збірки. Maven 3.9.9 завантажує
-Wrapper. Команди **з кореня репозиторію**:
+Усі команди — **з кореня репозиторію**. Потрібний JDK 21;
+для першого завантаження Maven і залежностей потрібен інтернет.
 
 Linux/macOS:
 
 ```sh
+./mvnw -B -pl LAB_05 -am test
+./mvnw -B -pl LAB_05 -am package
 ./mvnw -B -pl LAB_05 -am verify
 ```
 
 Windows PowerShell:
 
 ```powershell
+.\mvnw.cmd -B -pl LAB_05 -am test
+.\mvnw.cmd -B -pl LAB_05 -am package
 .\mvnw.cmd -B -pl LAB_05 -am verify
 ```
 
-Verify включає компіляцію, JUnit, пакування JAR та SpotBugs. Для всіх п’яти
-модулів — `./mvnw -B verify` (Windows: `.\mvnw.cmd -B verify`).
-Clean за потреби видаляє target, але не обов’язковий перед кожною збіркою.
-Окремі фази: `./mvnw -B -pl LAB_05 -am test` та `./mvnw -B -pl LAB_05 -am package`.
+Verify включає компіляцію, JUnit, пакування й SpotBugs. `clean` необов’язковий:
+видаляє target перед збіркою. Усі модулі: `./mvnw -B clean verify`
+або `.\mvnw.cmd -B clean verify`. Із каталогу LAB_05 Wrapper — `../mvnw`
+або `..\mvnw.cmd`, JAR — `target/lab05.jar`.
 
-## Запуск робочої основи
+## Запуск
 
-Ці java-команди підходять Linux/macOS та PowerShell:
-
-```sh
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/input.csv --output LAB_05/out/report.txt
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/danger-example.csv --output LAB_05/out/report.txt --danger
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --queries
-java -jar LAB_05/target/lab05.jar --version
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --help
-```
-
-Перед українським виводом у Windows PowerShell:
+Java-команди однакові для Linux, macOS та PowerShell. Для українського
+консольного виводу в Windows перед запуском:
 
 ```powershell
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 ```
 
-Без аргументів запускати з папки LAB_05: типовий вхід data/input.csv,
-звіт out/report.txt. Шляхи відносні до поточного каталогу, батьківські папки
-звіту створюються автоматично. Із папки LAB_05 збірка запускається через
-`../mvnw -B verify`, JAR — `java -jar target/lab05.jar`.
+Стандартний аналіз, як у попередній роботі:
 
-Поки доступні лише попередні параметри: --input, --output, --danger,
---queries, --help та --version. Нові параметри експорту/імпорту погодимо
-після реалізації компонентів. Локальна версія —
-`lab05 1.4.0-SNAPSHOT (build local)`, у CI — номер збірки.
-
-## Старий вхід та новий експорт — два контракти
-
-Старі input.csv, danger-example.csv та queries-example.csv залишаються
-UTF-8 без заголовка, роздільник `;`, порядок date;temperature;humidity;pressure;wind.
-Валідація, LocalDate, підтипи й результати запитів четвертої роботи збережені.
-
-Новий CSV-експорт за методичкою матиме **коми, заголовок та екранування**.
-Реалізована окрема плоска модель WeatherReadingRecord: date LocalDate,
-temperature/humidity/pressure/wind double. Вона представляє зберігання,
-а попередня sealed-модель лишається для роботи й запитів. Це не вимога
-замінити WeatherReading на Java record; анотації FIELD зручно додати до
-полів окремого незмінного final класу з equals/hashCode.
-
-При сортуванні рефлексивних полів за Java-іменем порядок буде:
-date, humidity, pressure, temperature, wind. Відповідний заголовок:
-
-```text
-дата,вологість,тиск,температура,вітер
+```sh
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/input.csv --output LAB_05/out/report.txt
 ```
 
-[Ручний еталон export-example.csv](data/export-example.csv) — специфікація,
-а не результат вже реалізованого експорту. Він не є входом старого --input.
-Порожній експорт має містити заголовок завдяки явному Class<T>.
-Ключ демонстрації round-trip — date; порівнюється весь список за equals
-із збереженням порядку й дублікатів, а не карта за унікальною датою.
+Експорт усіх коректних записів у два формати та перевірка читання назад:
 
-Метеозапис не містить довільного тексту чи enum у своїх п’яти колонках.
-Тому універсальність, коми, лапки, multiline й помилки enum перевірятимемо
-на допоміжних тестових типах, не додаючи штучних полів до варіанта.
-[quoted-example.csv](src/test/resources/csv/quoted-example.csv) — ручний
-приклад: 4 фізичних рядки, 3 CSV-записи разом із заголовком, 2 об’єкти.
-Документ потрібно читати цілком: readAllLines/split не розбирають quoted multiline.
+```sh
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --export-csv LAB_05/out/weather.csv --export-json LAB_05/out/weather.json --round-trip
+```
 
-## Збережений контрольний вивід
+Очікується `Round-trip: true (записів: 7)`. Папки створюються автоматично.
+Імпорт нового CSV та попередні аналізи:
 
-У [src/test/resources/baseline](src/test/resources/baseline) збережено
-фактичні результати LAB_04 до змін:
+```sh
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --import-csv LAB_05/out/weather.csv --output LAB_05/out/imported-report.txt --danger --queries
+java -jar LAB_05/target/lab05.jar --version
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --help
+```
 
-- standard-console.txt / standard-report.txt — input.csv;
-- danger-console.txt / danger-report.txt — danger-example.csv з --danger;
-- queries-console.txt / queries-report.txt — queries-example.csv з --queries.
+| Параметр | Призначення |
+| --- | --- |
+| --input ШЛЯХ | Старий CSV без заголовка з `;` |
+| --import-csv ШЛЯХ | Новий CSV із заголовком і комами; замість --input |
+| --output ШЛЯХ | Стандартний текстовий звіт |
+| --export-csv ШЛЯХ | Експорт коректних вимірювань у новий CSV |
+| --export-json ШЛЯХ | Експорт тих самих значень у JSON |
+| --round-trip | Прочитати --export-csv назад і порівняти повні списки |
+| --danger / --queries | Попередні додаткові аналізи в консолі |
+| --help / --version | Окремий запуск довідки чи версії |
 
-Це еталони Linux із LF; на інших ОС у порівняннях слід враховувати системні
-закінчення рядків. Старі дані/звіти перших чотирьох робіт збережені.
+Повторений шлях використовує останнє значення. --round-trip потребує
+--export-csv. Шляхи джерела, звіту й експортів мають відрізнятися.
+Без аргументів запускати з LAB_05: вхід data/input.csv, звіт out/report.txt.
+Відносні шляхи рахуються від поточного каталогу. Помилки пояснюються в stderr;
+успішність нових операцій у скриптах слід підтверджувати також створеними файлами
+й повідомленням round-trip, оскільки збережено попередню обробку помилок Main.
 
-## Javadoc
+## Два різні CSV-контракти
+
+Старий --input: UTF-8, без заголовка, `date;temperature;humidity;pressure;wind`.
+Новий --export-csv / --import-csv: UTF-8 без BOM, коми, заголовок, LF.
+Порядок за Java-іменами полів: date, humidity, pressure, temperature, wind.
+
+```csv
+дата,вологість,тиск,температура,вітер
+2026-09-01,70.0,1013.0,10.0,7.5
+```
+
+Фактично згенеровані JAR приклади: [CSV](data/export-example.csv),
+[JSON](data/export-example.json). Вони містять 7 об’єктів, зокрема повторену дату.
+[Приклад іншого анотованого класу](data/quoted-export-example.csv) згенерований
+тим самим експортером: кома/лапки/multiline; 4 фізичних рядки, 2 об’єкти.
+
+Коми, лапки та CR/LF усередині значення вимагають зовнішніх лапок;
+внутрішні лапки подвоюються. Парсер читає весь документ, не split/readAllLines.
+Переноси всередині клітинки зберігаються точно; межі нових записів — LF
+на всіх ОС. При імпорті також дозволено CRLF/CR. Заголовок точний, порядок
+не переставляється. Порожній файл/header-only дають порожній список.
+Неправильний заголовок, лапки, число, дата або інваріант — DataStorageException.
+
+## Модель, універсальність та помилки
+
+WeatherReadingRecord — final-клас, п’ять private final полів з @CsvColumn:
+LocalDate та чотири double. Null-дата заборонена, температура скінченна,
+вологість 0–100 %, тиск >0, вітер >=0; NaN/Infinity відхиляються.
+Equals/hashCode враховують усі значення. FromReading/toReading зберігають
+попередню sealed-модель і вибір підтипу через Builder.
+
+Repository.all — незмінний незалежний знімок структури списку;
+find приймає Predicate<? super T>. Об’єкти не клонуються.
+Експортери не знають погоди: анотовані declared-поля відбираються через
+рефлексію, static/неанотовані пропускаються. Успадковані/вкладені поля
+не обходяться. Назви колонок непорожні й унікальні, доступ перевірений.
+CSV null-поле означає порожню клітинку, JSON — null; null-запис відхиляється.
+JSON зберігає числа/boolean; текст, дати й enum — рядки. NaN/Infinity та
+вкладені JSON-об’єкти відхиляються. Файли перезаписуються (не append).
+DataStorageException зберігає контекст і cause технічної помилки.
+
+Ключ прикладу — date; порівнюються повні списки, тому повторені дати не
+втрачаються в Map. Enum не є полем варіанта 18; помилки enum перевірені
+на незалежному допоміжному типі в тестах.
+
+## Перевірки, пояснення та Javadoc
+
+Локальний clean verify: 303 тести всіх модулів, з них 117 у LAB_05;
+failures/errors/skipped — 0, SpotBugs без зауважень. Збережені 83 попередні
+тести LAB_05, додано 34 нові. Старі standard/danger/queries console/file
+перевіряються за [baseline](src/test/resources/baseline).
+CI перевіряє всі модулі на Ubuntu/Windows/macOS, запускає JAR, парсить JSON,
+порівнює CSV й звіти та публікує JAR і згенеровані файли.
+
+- [Пояснення всієї реалізації](CODE_GUIDE.md).
+- [План і критерії](PLAN.md).
+- [Benchmark кешу](BENCHMARK.md).
+- [GitHub Actions](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/actions).
 
 Linux/macOS:
 
@@ -110,104 +146,12 @@ Linux/macOS:
 javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_05/target/apidocs LAB_05/src/main/java/ua/lpnu/kzp/lab05/*.java
 ```
 
-Windows PowerShell:
+PowerShell:
 
 ```powershell
 $sources = @(Get-ChildItem LAB_05/src/main/java -Recurse -Filter '*.java' | ForEach-Object { $_.FullName })
 javadoc -Werror -encoding UTF-8 -charset UTF-8 -docencoding UTF-8 -d LAB_05/target/apidocs @sources
 ```
 
-Відкрити LAB_05/target/apidocs/index.html. Target/out та локальні методички
-не комітяться. План і критерії — у [PLAN.md](PLAN.md).
-Фінальний REPORT готується після реалізації й спочатку надається студенту
-для перегляду; звіт попередньої роботи не копіюється як доказ готовності цієї.
-
-## Перевірка основи
-
-Локальний clean verify успішний: 269 тестів п’яти модулів, із них 83
-у LAB_05; failures/errors/skipped — 0, SpotBugs без зауважень. Javadoc
--Werror проходить. Реальні JAR і збережені контрольні звіти перевірені.
-Віддалений CI та його артефакти — у [Issue #68](https://github.com/Layer2686/CPPT_Lazor_SV_KI-304_2/issues/68).
-Це результати підготовки; перевірки нових компонентів наведені нижче.
-
-## Сховище Repository<T>
-
-Контролер зберігає коректні вимірювання в Repository<WeatherReading>.
-Add відхиляє null, all повертає незмінний незалежний знімок списку,
-find приймає Predicate<? super T> і повертає збіги у початковому порядку.
-Дублікати збережені. Самі об’єкти при отриманні знімка не клонуються.
-Null-умова пошуку відхиляється NullPointerException.
-
-Додано 4 тести Repository: LAB_05 — 87 тестів, локальні verify/SpotBugs
-і Javadoc -Werror успішні. Перевірка незмінності попередніх звітів
-пройшла для стандартного режиму, --danger та --queries.
-
-## Власний виняток DataStorageException
-
-Створено checked-виняток із двома конструкторами: повідомлення та
-повідомлення з Throwable cause. GetMessage повертає контекст операції,
-getCause зберігає початковий виняток. Додано 2 тести конструкторів;
-LAB_05 — 89 тестів. Валідація існуючої моделі залишається IllegalArgumentException.
-Контракт майбутніх помилок експорту/імпорту наведено в [плані](PLAN.md).
-Власний виняток ще не підключений до нових CSV-операцій: ці компоненти
-реалізуються в наступних Issues.
-
-## Плоский запис та анотація — Issue #71
-
-WeatherReadingRecord — незмінний final-клас із п’ятьма приватними final-полями.
-Конструктор відхиляє null-дату й некоректні показники; публічні гетери дають
-доступ до значень. Equals/hashCode враховують усі п’ять полів, fromReading
-переносить значення як звичайного, так і штормового вимірювання.
-
-CsvColumn має лише String value(), ціль FIELD та зберігається під час
-виконання (RUNTIME). Усі п’ять полів позначені українськими назвами колонок.
-Додано 5 тестів метаданих, валідації, рівності та перенесення обох підтипів.
-Це модель для наступних етапів; файловий CSV round-trip ще не реалізований.
-
-Перевірка етапу #71: `./mvnw -B -pl LAB_05 -am clean verify` —
-94 тести, 0 failures/errors/skipped; SpotBugs без зауважень.
-Javadoc з `-Werror` успішний.
-
-## CSV-експортер — Issue #72
-
-CsvExporter<T>.write(path, type, records) записує анотовані declared-поля
-універсально. Null-поле дає порожню клітинку; null-запис/клас/список
-відхиляються. Static й неанотовані поля пропускаються. Порядок алфавітний
-за Java-іменем; коми/лапки/CR/LF екрануються, лапки подвоюються.
-Новий CSV має UTF-8 та LF, незалежно від ОС. Порожній список дає заголовок.
-Помилки читання полів і файлової системи пояснює DataStorageException;
-технічна першопричина зберігається. CLI експорту додається на етапі інтеграції.
-
-## CSV-парсер, імпорт і регресія — Issues #73–#75
-
-CsvParser.parseDocument обробляє весь документ чотирма станами: початок
-поля, неекрановане поле, усередині лапок, після лапки. CR/LF/CRLF зовні
-завершують запис; усередині зберігаються точно. Неправильні лапки відхиляються.
-Результати незмінні, остання порожня клітинка не втрачається.
-
-WeatherCsvStorage читає UTF-8 і перевіряє точний заголовок; порожній файл
-або лише заголовок означають порожній список. WeatherReadingRecord.fromFields
-та fromCsv відновлюють дату й числа з перевіркою інваріантів. ToReading
-використовує попередній Builder для відновлення правильного підтипу.
-Порівняння повних списків перевіряє значення, порядок та повторені дати.
-
-Тести охоплюють quoted/multiline, завершальний роздільник, погані лапки,
-заголовки/кількість/числа/дати, null, порожні дані, файлові cause,
-незалежний тип з enum та текстом. Старі standard/danger/queries звіряються
-зі збереженим baseline після нормалізації лише системних CRLF у звітах.
-
-## JSON та кеш метаданих — Issues #76–#77
-
-Exporter<T> задає спільний write(Path, Class<T>, List<? extends T>).
-CsvExporter та JsonExporter отримують один набір полів через ColumnMetadata.
-Назви колонок мають бути непорожніми й унікальними. JSON зберігає числові та
-boolean-типи, null; текст/enum/дати кодує рядками. Лапки, зворотні слеші,
-керівні символи й surrogate-символи екрануються. NaN/Infinity і вкладені
-об’єкти в JSON відхиляються власним винятком.
-
-Кеш ConcurrentHashMap<Class<?>, List<Field>> зберігає лише незмінний список
-метаданих для класу, жодних значень об’єктів. Для вимірювання доступний
-CsvExporter(false). ExportBenchmark виконує 3 прогріви й 7 повторів,
-чергує режими та порівнює всі 100 файлів. Дані — 10 000 записів, 100 на файл.
-Методика й фактичні результати наведені в BENCHMARK.md. Тести швидкість
-не порівнюють; локальні 111 тестів і SpotBugs/Javadoc успішні.
+Відкрити LAB_05/target/apidocs/index.html. Target/out, локальні методички
+та приватні матеріали не публікуються.
