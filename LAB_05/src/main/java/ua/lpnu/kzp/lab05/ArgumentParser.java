@@ -2,7 +2,7 @@ package ua.lpnu.kzp.lab05;
 
 import java.nio.file.Path;
 
-/** Розбирає аргументи; не читає файли та не запускає обробку даних. */
+/** Перевіряє параметри без файлових операцій та обробки вимірювань. */
 public final class ArgumentParser
 {
     private ArgumentParser()
@@ -10,63 +10,68 @@ public final class ArgumentParser
     }
 
     /**
-     * Перевіряє ключі та їхні значення, зберігаючи правила попередньої реалізації.
-     * Якщо ключ шляху повторений, використовується останнє значення.
-     * Прапорці --danger і --queries не потребують значення та можуть повторюватися.
-     *
-     * @param args параметри командного рядка
-     * @return перевірені параметри запуску
-     * @throws IllegalArgumentException якщо параметр невідомий або шлях не задано
+     * Розбирає шляхи та прапорці; повторений параметр шляху використовує останнє значення.
+     * Старий --input та новий --import-csv є взаємовиключними джерелами.
+     * @param args аргументи командного рядка
+     * @return перевірені параметри
+     * @throws IllegalArgumentException якщо ключі, значення або комбінації некоректні
      */
     public static CommandLineOptions parse(String[] args)
     {
-        Path inputPath = Path.of("data/input.csv");
-        Path outputPath = Path.of("out/report.txt");
+        Path input = Path.of("data/input.csv");
+        Path output = Path.of("out/report.txt");
+        Path importCsv = null;
+        Path exportCsv = null;
+        Path exportJson = null;
+        boolean explicitInput = false;
         boolean danger = false;
         boolean queries = false;
+        boolean roundTrip = false;
         if (args.length == 1 && "--help".equals(args[0]))
         {
-            return new CommandLineOptions(inputPath, outputPath, true, false, danger, queries);
+            return new CommandLineOptions(input, output, true, false, false, false);
         }
         if (args.length == 1 && "--version".equals(args[0]))
         {
-            return new CommandLineOptions(inputPath, outputPath, false, true, danger, queries);
+            return new CommandLineOptions(input, output, false, true, false, false);
         }
-        for (int argIndex = 0; argIndex < args.length;)
+        for (int index = 0; index < args.length; index++)
         {
-            String optionName = args[argIndex];
-            if ("--danger".equals(optionName))
+            String option = args[index];
+            switch (option)
             {
-                danger = true;
-                argIndex++;
-                continue;
+                case "--danger" -> danger = true;
+                case "--queries" -> queries = true;
+                case "--round-trip" -> roundTrip = true;
+                case "--input", "--output", "--import-csv", "--export-csv", "--export-json" ->
+                {
+                    if (index + 1 >= args.length || args[index + 1].startsWith("--"))
+                    {
+                        throw new IllegalArgumentException("Після " + option + " бракує шляху");
+                    }
+                    Path path = Path.of(args[++index]);
+                    switch (option)
+                    {
+                        case "--input" ->
+                        {
+                            input = path;
+                            explicitInput = true;
+                        }
+                        case "--output" -> output = path;
+                        case "--import-csv" -> importCsv = path;
+                        case "--export-csv" -> exportCsv = path;
+                        case "--export-json" -> exportJson = path;
+                        default -> throw new IllegalStateException("Непередбачений параметр шляху");
+                    }
+                }
+                default -> throw new IllegalArgumentException("Невідомий параметр: " + option);
             }
-
-            if ("--queries".equals(optionName))
-            {
-                queries = true;
-                argIndex++;
-                continue;
-            }
-            if (!"--input".equals(optionName) && !"--output".equals(optionName))
-            {
-                throw new IllegalArgumentException("Невідомий параметр: " + optionName);
-            }
-            if (argIndex + 1 >= args.length || args[argIndex + 1].startsWith("--"))
-            {
-                throw new IllegalArgumentException("Після " + optionName + " бракує шляху");
-            }
-            Path path = Path.of(args[argIndex + 1]);
-            if ("--input".equals(optionName))
-            {
-                inputPath = path;
-            }
-            else
-            {
-                outputPath = path;
-            }
-            argIndex += 2;
         }
-        return new CommandLineOptions(inputPath, outputPath, false, false, danger, queries);
+        if (explicitInput && importCsv != null)
+        {
+            throw new IllegalArgumentException("Виберіть лише --input або --import-csv");
+        }
+        return new CommandLineOptions(input, output, false, false, danger, queries,
+                importCsv, exportCsv, exportJson, roundTrip);
     }
 }
