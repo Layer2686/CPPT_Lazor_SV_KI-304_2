@@ -3,7 +3,32 @@
 Варіант 18, Java 21, Maven 3.9.9 Wrapper, версія **1.4.0**.
 Окремий модуль LAB_05 із пакетом `lab05`. LAB_01–LAB_04 запускаються незалежно.
 Звіт описує реліз `v1.4.0`, у якому використовувався пакет `ua.lpnu.kzp.lab05`.
-Команди нижче відповідають поточній структурі.
+
+| Що | Шлях |
+| --- | --- |
+| Код, пакет `lab05` | [src/main/java/lab05](src/main/java/lab05) |
+| Тести | [src/test/java/lab05](src/test/java/lab05) |
+| Виконуваний JAR після збірки | `LAB_05/target/lab05.jar` від кореня |
+
+## Швидкий запуск
+
+З кореня репозиторію на Linux або macOS виконай збірку й запусти
+демонстрацію CSV, JSON і перевірки відновлення даних.
+
+```sh
+./mvnw -B -pl LAB_05 -am package
+java -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --export-csv LAB_05/out/weather.csv --export-json LAB_05/out/weather.json --round-trip
+```
+
+У Windows PowerShell для збірки використай `.\mvnw.cmd -B -pl LAB_05 -am package`.
+Команда запуску JAR та шляхи ті самі. У консолі має з’явитися
+`Round-trip: true (записів: 7)`, а файли будуть у `LAB_05/out/`.
+
+Інша точка входу запускає [вимірювання кешу](BENCHMARK.md).
+
+```sh
+java -cp LAB_05/target/lab05.jar lab05.ExportBenchmark
+```
 
 Реалізовано Repository<T>, власний виняток, @CsvColumn, універсальні CSV/JSON
 експортери, документний CSV-парсер, імпорт і round-trip. Зірочка: спільний
@@ -50,14 +75,7 @@ Java-команди однакові для Linux, macOS та PowerShell. Для
 java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/input.csv --output LAB_05/out/report.txt
 ```
 
-Експорт усіх коректних записів у два формати та перевірка читання назад:
-
-```sh
-java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --export-csv LAB_05/out/weather.csv --export-json LAB_05/out/weather.json --round-trip
-```
-
-Очікується `Round-trip: true (записів: 7)`. Папки створюються автоматично.
-Імпорт нового CSV та попередні аналізи:
+Після швидкого запуску можна імпортувати створений CSV та виконати попередні аналізи.
 
 ```sh
 java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --import-csv LAB_05/out/weather.csv --output LAB_05/out/imported-report.txt --danger --queries
