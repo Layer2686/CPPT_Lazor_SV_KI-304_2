@@ -17,10 +17,11 @@
 
 ```sh
 ./mvnw -B -pl LAB_05 -am package
-java -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --export-csv LAB_05/out/weather.csv --export-json LAB_05/out/weather.json --round-trip
+java "-Dstdout.encoding=UTF-8" "-Dstderr.encoding=UTF-8" -jar LAB_05/target/lab05.jar --input LAB_05/data/queries-example.csv --output LAB_05/out/report.txt --export-csv LAB_05/out/weather.csv --export-json LAB_05/out/weather.json --round-trip
 ```
 
 У Windows PowerShell для збірки використай `.\mvnw.cmd -B -pl LAB_05 -am package`.
+Для українського виводу в PowerShell виконай [налаштування UTF-8](#запуск).
 Команда запуску JAR та шляхи ті самі. У консолі має з’явитися
 `Round-trip: true (записів: 7)`, а файли будуть у `LAB_05/out/`.
 
